@@ -1,6 +1,7 @@
 
 package enigma;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import java.awt.*;
 /**
  *
  * @author tuf67096
@@ -12,10 +13,16 @@ public class Enigma {
      */
     public static void main(String[] args) {
         System.out.println("Hello");
+        String encryptText = "";
+        String decryptText = "";
+        String keyText = "";
+        JFrameWindow gui = new JFrameWindow();
+        encryptText = gui.getentext();
+        decryptText = gui.getdetext();
+        keyText = gui.getkeytext();
         
         
-        //Dialog Box - basic Input for encryption/Decription and key
-        JOptionPane.showInputDialog("Key");
+        
     }
     
 }
