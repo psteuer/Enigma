@@ -13,14 +13,14 @@ public static final int Nr = 4;
         //out is the output in cipher text
         //key is the expanded key of size 4*Nb*(Nb+1)
         byte[][] state = new byte[4][Nb];  ///Nb will always be size 4
-        state = in; 
+       // state = in; 
         
-        AddRoundKey(state, word, Nb-1);
+        //AddRoundKey(state, word, Nb-1);
         for(int round = 1; round < Nr; round++){
-            SubBytes(state);
-            ShiftRows(state);
-            MixColumns(state);
-            AddRoundKey(state, word, round*Nb, (round+1)*Nb - 1);
+         //   SubBytes(state);
+          //  ShiftRows(state);
+           // MixColumns(state);
+            //AddRoundKey(state, word, round*Nb, (round+1)*Nb - 1);
                  
         }
         
