@@ -1,10 +1,12 @@
 
 package enigma;
+import java.awt.event.ActionListener;
 
 /**
  *
  * @author psteu_000
  */
+//This is the View for the MVC model
 public class JFrameWindow extends javax.swing.JFrame {
 
     private String entext, detext, keytext;
@@ -26,13 +28,16 @@ public class JFrameWindow extends javax.swing.JFrame {
         return keytext;
     }
     public void setentext(String entext){
-        this.entext = entext;
+        //this.entext = entext;
+        this.entext = EncryptTextBox.getText();
     }
     public void setdetext(String detext){
-        this.detext = detext;
+        //this.detext = detext;
+        this.detext = DecryptTextbox.getText();
     }
     public void setkeytext(String keytext){
-        this.keytext = keytext;
+        //this.keytext = keytext;
+        this.keytext = KeyTextBox.getText();
     }
 
     /**
@@ -153,7 +158,11 @@ public class JFrameWindow extends javax.swing.JFrame {
 
    }
     
-    
+    void addEncryptListener(ActionListener listenForEncryptButton){
+        EncryptButton.addActionListener(listenForEncryptButton);
+//////////////////***************************************
+    }
+ 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DecryptButton;
