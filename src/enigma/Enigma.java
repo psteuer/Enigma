@@ -21,6 +21,8 @@ public class Enigma {
         decryptText = gui.getdetext();
         keyText = gui.getkeytext();
         
+        Cipher cipher = new Cipher();
+        
         
         
     }
