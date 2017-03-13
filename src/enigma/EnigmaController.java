@@ -13,19 +13,40 @@ import java.awt.event.ActionListener;
  */
 //This is the Controller for the MVC model
 public class EnigmaController {
-    private JFrameWindow theView;
+    private EnigmaView theView;
     private Cipher theModel;
     
-    public EnigmaController(JFrameWindow theView, Cipher theModel) {
+    public EnigmaController(EnigmaView theView, Cipher theModel) {
         this.theView = theView;
         this.theModel = theModel;
         
         this.theView.addEncryptListener(new EncryptListener());
+    }   
+    class EncryptListener implements ActionListener{
+        public void actionPerformed(ActionEvent e){ 
+            //Gets the key and the plaintext
+            String key = "";
+            String Entext = "";
+            //put in try catch block
+            key = theView.getkeytext();
+            System.out.println(key);   ///testing
+            theView.setentext("WOrking?");
+            Entext = theView.getentext();
+            theModel.Encipher(Entext, key);
     }
-    class EncryptListener implements ActionListener(){
+    class DecryptListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
-            //Gets the key and the Encryptdata
-            //line 25 in example from http://www.newthinktank.com/2013/02/mvc-java-tutorial/
+            //will run if the decrypt button is pressed
+            System.out.println("HELLO?");
+            String key = "";
+            String Detext = "";
+            key = theView.getkeytext();
+            Detext = theView.getdetext();
+            theModel.decipher(Detext, key);
+            
         }
+    
+        
     }
+}
 }
