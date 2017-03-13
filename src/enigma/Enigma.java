@@ -12,18 +12,10 @@ public class Enigma {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Hello");
-        String encryptText = "";
-        String decryptText = "";
-        String keyText = "";
-        JFrameWindow gui = new JFrameWindow();
-        encryptText = gui.getentext();
-        decryptText = gui.getdetext();
-        keyText = gui.getkeytext();
-        
+        EnigmaView theView = new EnigmaView();
         Cipher cipher = new Cipher();
-        
-        
+        EnigmaController thecontroller = new EnigmaController(theView,cipher);
+        theView.setVisible(true);
         
     }
     
