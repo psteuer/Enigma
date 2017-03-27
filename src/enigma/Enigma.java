@@ -27,13 +27,13 @@ public class Enigma {
         Cipher cipher = new Cipher();
         EnigmaController thecontroller = new EnigmaController(theView, cipher);
        
-        /*
-        Result result = JUnitCore.runClasses(Enigma.Tester.class);
+        
+        Result result = JUnitCore.runClasses(enigma.Enigma.class);
          for(Failure failure : result.getFailures()){
              System.out.println(failure.toString());
          }
         
-        */
+        
         //background https://uigradients.com/# love couple
         
         
