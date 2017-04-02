@@ -24,8 +24,9 @@ public class Enigma {
     public static void main(String[] args) {
 
         EnigmaView theView = new EnigmaView();
-        Cipher cipher = new Cipher();
-        EnigmaController thecontroller = new EnigmaController(theView, cipher);
+        Encrypt encrypt = new Encrypt();
+        Decrypt decrypt = new Decrypt();
+        EnigmaController thecontroller = new EnigmaController(theView, encrypt, decrypt);
        
         
         Result result = JUnitCore.runClasses(enigma.Enigma.class);
