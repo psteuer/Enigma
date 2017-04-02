@@ -35,6 +35,9 @@ public class Tester {
     int[][] key = {{0x54, 0x68, 0x61, 0x74}, {0x73, 0x20, 0x6D, 0x79}, {0x20, 0x4B, 0x75, 0x6E}, {0x67, 0x20, 0x46, 0x75}};
     int[][] stateKeyInput = {{0x54, 0x4F, 0x4E, 0x20}, {0x77, 0x6E, 0x69, 0x54}, {0x6F, 0x65, 0x6E, 0x77}, {0x20, 0x020, 0x65, 0x6F}};
 
+    int[][] PlainText = {{0x54, 0x77, 0x6F, 0x20}, {0x4F, 0x6E, 0x65, 0x20}, {0x4E, 0x69, 0x6E, 0x65}, {0x20, 0x54, 0x77, 0x6F}};
+    int[][] CipherText = {{0x29, 0xC3, 0x50, 0x5F}, {0x57, 0x14, 0x20, 0xF6}, {0x40, 0x22, 0x99, 0xB3}, {0x1A, 0x02, 0xD7, 0x3A}};
+
     String str = "Thats my Kung Fu";
     String strShort = "Thats m";
 
@@ -93,8 +96,20 @@ public class Tester {
     public void testRand() {
         Assert.assertEquals(16, theView.getkeytext().length());
     }
+
     @Test
-    public void TestformatIntToStr(){
-        Assert.assertEquals("Thats my Kung Fu" , control.formatIntToStr(key) );
+    public void TestformatIntToStr() {
+        Assert.assertEquals("Thats my Kung Fu", control.formatIntToStr(key));
     }
+
+    @Test
+    public void TestEncrypt() {
+        Assert.assertArrayEquals(CipherText, etest.Encipher(PlainText, key));
+    }
+    
+    @Test
+    public void TestDecrypt(){
+        Assert.assertArrayEquals(PlainText, dtest.decipher(CipherText, key));
+    }
+            
 }
