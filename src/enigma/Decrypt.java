@@ -38,7 +38,7 @@ public class Decrypt extends Cipher {
     Performes linear transofrmation on state
      */
     //NOTESTED_______________________________________________
-    private int[][] InvMixColumns(int[][] state) {
+    public int[][] InvMixColumns(int[][] state) {
         int[][] temp = new int[4][4];
 
         for (int c = 0; c < 4; c++) {
@@ -57,7 +57,7 @@ public class Decrypt extends Cipher {
     NOTES: each entry substitued with corrisponding s-box entry
     For instance: 0x6E is substituted by entry of s-box in row 6, column E
      */
-    private int[][] invSubBytes(int[][] state) {
+    public int[][] invSubBytes(int[][] state) {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < NB; col++) {
                 //break state apart into 2 bytes, use each byte for row/column lookup
@@ -76,7 +76,7 @@ public class Decrypt extends Cipher {
     Shifts rows 2,3,4 by offsets of 1,2,3 respectively
     Calls the rightshift function
      */
-    private int[][] myInvShiftRows(int[][] state) {
+    public int[][] myInvShiftRows(int[][] state) {
         for (int r = 1; r < 4; r++) {
             System.arraycopy(shiftRight(state[r], r), 0, state[r], 0, 4);
         }
