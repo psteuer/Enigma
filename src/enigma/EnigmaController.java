@@ -5,12 +5,13 @@
  */
 package enigma;
 
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Random;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -20,8 +21,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
- * @author psteu_000
- * This is the Controller for the MVC model
+ * @author psteu_000 This is the Controller for the MVC model
  */
 public class EnigmaController {
 
@@ -47,12 +47,29 @@ public class EnigmaController {
         theView.setIcon();
         theView.setVisible(true);
         theView.setResizable(false);
+        theView.btnEnableDisable(false);
 
         theView.addEncryptListener(new EncryptListener());
         theView.addDecryptListener(new DecryptListener());
         theView.addFileSelector(new FileSelector());
         theView.addGoEncryptFile(new EncryptFile());
         theView.addGoDecryptFile(new DecryptFile());
+        theView.addRand(new KeyRand());
+    }
+
+    class KeyRand implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //split this up into another class?
+            String keynew = "";
+            for (int a = 0; a < 16; a++) {
+                Random r = new Random();
+                char c = (char) (r.nextInt(26) + 'a');
+                keynew = keynew + c;
+            }
+            theView.setkeytext(keynew);
+        }
     }
 
     class FileSelector implements ActionListener {
@@ -64,10 +81,9 @@ public class EnigmaController {
             int result = fileChooser.showOpenDialog(theView);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
-                //System.out.println("Selected file: " + selectedFile.getAbsolutePath());
                 location = selectedFile.getAbsolutePath();
                 theView.setIsFileText(location);
-                //Enable the buttons 
+                theView.btnEnableDisable(true);
                 //Also set filter to only text files 
             }
         }
@@ -77,45 +93,16 @@ public class EnigmaController {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            //Gets the key and the plaintext
-            String key = "";
-            String Entext = "";
-
-            //put in try catch block
+            String key;
+            String Entext;
             try {
                 key = theView.getkeytext();
-                System.out.println(key + " This is the Input Key");   //Prints out the input of the key for testing purposes
                 Entext = theView.getentext();
-                System.out.println(Entext + " This is the input plaintext");
+                int[][] nfo;
+                nfo = EncryptModel.Encipher(format(Entext, 2), format(key, 1));
 
-                //check if input is too big
-                if (Entext.length() > 16) { //16 is 1 byte so 128 bits
-                    JFrame frame = new JFrame();
-                    JOptionPane.showMessageDialog(frame, "Error: Please enter a Plaintext value less than 128 bits \n ie. Thats my Kung Fu", "Error", JOptionPane.ERROR_MESSAGE);
-                    //System.out.println(" Entext ="+Entext.length() + " key = "+ key.length());
-                } else if (key.length() > 16) { //16 is 1 byte so 128 bits
-                    JFrame frame = new JFrame();
-                    JOptionPane.showMessageDialog(frame, "Error: Please enter a key value less than 128 bits \n ie. Two One Nine Two ", "Error", JOptionPane.ERROR_MESSAGE);
-                    //System.out.println(" Entext ="+Entext.length() + " key = "+ key.length());
-                }
-
-                //check if padding is needed
-                if (Entext.length() < 16) {
-                    Entext = padding(Entext);
-                } else if (key.length() < 16) {
-                    key = padding(key);
-                }
-                if ((Entext.length() == 16) && (key.length() == 16)) {
-                    int[][] one = new int[4][4];
-                    int[][] two = new int [4][4];
-                    int[][] nfo;
-                    String fout;
-                    //one = formatStrToInt(Entext); //is the formatted plaintext
-                    //two = formatStrToInt(key); //is formatted key
-                    nfo = EncryptModel.Encipher(one, two);
-                    fout = formatIntToStr(nfo);
-                    theView.setEncryptTextOutput(fout);
-                }
+                //Sets the formatted output to textbox
+                theView.setEncryptTextOutput(formatIntToStr(nfo));
 
             } catch (Exception abc) {
                 abc.getMessage();
@@ -125,72 +112,103 @@ public class EnigmaController {
 
     }
 
+    /*
+    INPUT: String input - to convert, type: 1 is Key, 2 is Input
+     */
+    public int[][] format(String in, int type) {
+        String w;
+        int[][] formattedIn; //formatted entext
+        if (type == 1) {
+            w = " Key ";
+        } else {
+            w = " Input ";
+        }
+        //check if input is too big
+        if (in.length() > 16) { //16 is 1 byte so 128 bits
+            JFrame frame = new JFrame();
+            JOptionPane.showMessageDialog(frame, "Error: Please enter a" + w + "value less than 128 bits \n ie. Thats my Kung Fu", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        //check if padding is needed
+        if (in.length() < 16) {
+            in = padding(in);
+        }
+        formattedIn = formatStrToInt(in); //is the formatted plaintext
+        return formattedIn;
+    }
+
     public String padding(String key) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int len = key.length();
+        String space = new String(new char[16 - len]).replace('\0', ' ');
+        key = key + space;
+        return key;
     }
 
     public int[][] formatStrToInt(String Entext) {
-        int[][] state1 = new int[4][4];
+        int[] ans = new int[16];
+        for (int a = 0; a < 16; a++) {
+            char[] arrayOfChars = Entext.toCharArray();
+            String arrayOfBytes = String.format("0x%02x", (int) arrayOfChars[a]);
+            ans[a] = Integer.decode(arrayOfBytes);
+        }
+        int[][] state = new int[4][4];
         int count = 0;
-        for(int c = 0; c < 4; c++){
-            for(int r = 0; r < 4; r++){
-                state1[c][r] = Integer.parseInt(Entext.substring(count, count));
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                state[c][r] = (int) ans[count];
+                count++;
             }
         }
-        return state1;
+        return state;
     }
 
     public String formatIntToStr(int[][] nfo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        char[] n = new char[16];
+        int count = 0;
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                n[count] = (char) nfo[r][c];
+                count++;
+            }
+        }
+        String out = new String(n);
+        return out;
+    }
+
+    //Testing function
+    public void printRows(int[][] key) {
+        int[][] pivot = new int[key[0].length][];
+        for (int row = 0; row < key[0].length; row++) {
+            pivot[row] = new int[key.length];
+        }
+
+        for (int row = 0; row < key.length; row++) {
+            for (int col = 0; col < key[row].length; col++) {
+                pivot[col][row] = key[row][col];
+            }
+        }
+        for (int[] pivot1 : pivot) {
+            System.out.println(Arrays.toString(pivot1));
+        }
+
     }
 
     class DecryptListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String key = "";
-            String Detext = "";
-            int[][] out;
-            String outstring;
+            String key;
+            String Detext;
             try {
                 key = theView.getkeytext();
-                System.out.println(key + " This is the input key");
                 Detext = theView.getdetext();
-                System.out.println(Detext + " This is the input ciphertext");
 
-                //check if input is too big
-                if (Detext.length() > 16) { //16 is 1 byte so 128 bits
-                    JFrame frame = new JFrame();
-                    JOptionPane.showMessageDialog(frame, "Error: Please enter a Cipher value less than 128 bits \n ie. Thats my Kung Fu", "Error", JOptionPane.ERROR_MESSAGE);
-                    //System.out.println(" Entext ="+Entext.length() + " key = "+ key.length());
-                } else if (key.length() > 16) { //16 is 1 byte so 128 bits
-                    JFrame frame = new JFrame();
-                    JOptionPane.showMessageDialog(frame, "Error: Please enter a key value less than 128 bits \n ie. Two One Nine Two ", "Error", JOptionPane.ERROR_MESSAGE);
-                    //System.out.println(" Entext ="+Entext.length() + " key = "+ key.length());
-                }
+                int[][] nfo;
+                nfo = DecryptModel.decipher(format(Detext, 2), format(key, 1));
+                theView.setDecryptTextOutput(formatIntToStr(nfo));
 
-                //check if padding is needed
-                if (Detext.length() < 16) {
-                    Detext = padding(Detext);
-                } else if (key.length() < 16) {
-                    key = padding(key);
-                }
-
-                if ((Detext.length() == 16) && (key.length() == 16)) {
-                    int[][] one;
-                    int[][] two;
-                    int[][] nfo;
-                    String fout;
-                    one = formatStrToInt(Detext); //is the formatted plaintext
-                    two = formatStrToInt(key); //is formatted key
-                    nfo = DecryptModel.decipher(one, two);
-                    fout = formatIntToStr(nfo);
-                    theView.setDecryptTextOutput(fout);
-                }
-            } catch (HeadlessException a) {
-                a.getMessage();
+            } catch (Exception abc) {
+                abc.getMessage();
             }
-            // theView.setentext(outstring);
 
         }
     }
