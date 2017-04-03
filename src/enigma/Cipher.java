@@ -153,10 +153,10 @@ public class Cipher {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 4; col++) {
                 //simple XOR each state int to corrisponding key int
-                state[row][col] = state[row][col] ^ key[row][col + wordplace];
+                state[row][col] = state[row][col] ^ key[row][col + wordplace]; //problem here
             }
         }
-        //System.out.println(Arrays.deepToString(state));
+
         return state;
     }
 
@@ -167,7 +167,7 @@ public class Cipher {
         //saves the first 16 bytes into expKey array
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 4; col++) {
-                expKey[col][row] = key[row][col];
+                expKey[col][row] = key[row][col]; //Heres the problem !!!!!!!!!!!!!!!!!!!!!!!!!
             }
         }
         int rconPlace = 1;
@@ -201,8 +201,7 @@ public class Cipher {
         return expKey;
     }
 
-    private int[] KeyCore(int[] temp, int rconPlace) {
-
+    public int[] KeyCore(int[] temp, int rconPlace) {
         //"copy the input over to the output" 
         int[] out = temp;
         //rotate 8 bits to the left, so one byte to the left operation to rotate the output eight bis to the left
@@ -229,11 +228,33 @@ public class Cipher {
         for (int row = 0; row < key.length; row++) {
             for (int col = 0; col < key[row].length; col++) {
                 pivot[col][row] = key[row][col];
+
             }
         }
         for (int row = 0; row < pivot.length; row++) {
             System.out.println(Arrays.toString(pivot[row]));
         }
+    }
+
+    public void hexprint(int[][] state) {
+        System.out.print(" [");
+        for (int a = 0; a < 4; a++) {
+            System.out.print("[");
+            for (int b = 0; b < 4; b++) {
+                if (b != 3) {
+                    System.out.print(Integer.toHexString(state[a][b]) + ", ");
+                } else {
+                    System.out.print(Integer.toHexString(state[a][b]));
+
+                }
+            }
+            if(a !=3)
+            System.out.print("],");
+            else
+                System.out.print("]");
+        }
+        System.out.println("]");
+
     }
 
     // </editor-fold>

@@ -116,7 +116,7 @@ public class EnigmaView extends javax.swing.JFrame {
         });
 
         EncryptTextBox.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        EncryptTextBox.setText("Thats my Kung Fu");
+        EncryptTextBox.setText("Two One Nine Two");
         EncryptTextBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 EncryptTextBoxActionPerformed(evt);
@@ -134,7 +134,7 @@ public class EnigmaView extends javax.swing.JFrame {
         DecryptTextbox.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
         KeyTextBox.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        KeyTextBox.setText("Two One Nine Two");
+        KeyTextBox.setText("Thats my Kung Fu");
         KeyTextBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 KeyTextBoxActionPerformed(evt);
@@ -174,8 +174,7 @@ public class EnigmaView extends javax.swing.JFrame {
         jLabel8.setText("Output (Plaintext)");
 
         FileSelector.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        FileSelector.setText("Select File");
-        FileSelector.setActionCommand("Select File");
+        FileSelector.setText("Select Text File");
         FileSelector.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 FileSelectorMouseClicked(evt);
@@ -265,16 +264,16 @@ public class EnigmaView extends javax.swing.JFrame {
                         .addComponent(jLabel1)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(127, 127, 127)
-                        .addComponent(EncryptButton))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(386, 386, 386)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(FileSelector)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(FileSelector)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(127, 127, 127)
+                            .addComponent(EncryptButton))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(386, 386, 386)
                             .addComponent(isFileUp))))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 17, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -326,14 +325,14 @@ public class EnigmaView extends javax.swing.JFrame {
                                 .addGap(91, 91, 91)))
                         .addComponent(DecryptTextOutput, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(EncryptButton)
-                            .addComponent(DecryptButton))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(DecryptButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(EncryptButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)))
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(FileSelector)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(FileSelector)
+                .addGap(18, 18, 18)
                 .addComponent(isFileUp)
                 .addGap(33, 33, 33)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)

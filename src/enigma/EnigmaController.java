@@ -7,11 +7,17 @@ package enigma;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -25,10 +31,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class EnigmaController {
 
-    private final EnigmaView theView;
-    private final Encrypt EncryptModel;
-    private final Decrypt DecryptModel;
-    private String location;
+    public final EnigmaView theView;
+    public final Encrypt EncryptModel;
+    public final Decrypt DecryptModel;
+    public final String locaiton = "";
 
     public EnigmaController(EnigmaView theView, Encrypt WEncryptModel, Decrypt DecryptModel) {
         this.theView = theView;
@@ -61,7 +67,6 @@ public class EnigmaController {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            //split this up into another class?
             String keynew = "";
             for (int a = 0; a < 16; a++) {
                 Random r = new Random();
@@ -77,15 +82,46 @@ public class EnigmaController {
         @Override
         public void actionPerformed(ActionEvent e) {
             JFileChooser fileChooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+            fileChooser.setFileFilter(filter);
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
             int result = fileChooser.showOpenDialog(theView);
             if (result == JFileChooser.APPROVE_OPTION) {
+                String location;
                 File selectedFile = fileChooser.getSelectedFile();
                 location = selectedFile.getAbsolutePath();
                 theView.setIsFileText(location);
                 theView.btnEnableDisable(true);
-                //Also set filter to only text files 
             }
+        }
+
+        private void getfile(String fileName) throws IOException {
+            boolean loadFromClasspath = true;
+            BufferedReader reader = null;
+            try {
+                if (loadFromClasspath) {
+                    // loading from classpath
+                    // see the link above for more options
+                    InputStream in = getClass().getClassLoader().getResourceAsStream("absolute/path/to/file/inside/jar/lol.txt");
+                    reader = new BufferedReader(new InputStreamReader(in));
+                } else {
+                    // load from file system
+                    reader = new BufferedReader(new FileReader(new File(fileName)));
+                }
+
+                String line = null;
+                while ((line = reader.readLine()) != null) { //change to 16 bytes
+                    // do something with the line here
+                    System.out.println("Line read: " + line);
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage() + " for lol.txt", "File Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                if (reader != null) {
+                    reader.close();
+                }
+            }
+
         }
     }
 
@@ -99,8 +135,7 @@ public class EnigmaController {
                 key = theView.getkeytext();
                 Entext = theView.getentext();
                 int[][] nfo;
-                nfo = EncryptModel.Encipher(format(Entext, 2), format(key, 1));
-
+                nfo = EncryptModel.Encipher(format(Entext, "PlainText"), format(key, "Key"));
                 //Sets the formatted output to textbox
                 theView.setEncryptTextOutput(formatIntToStr(nfo));
 
@@ -112,27 +147,42 @@ public class EnigmaController {
 
     }
 
+    class DecryptListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String key;
+            String Detext;
+            try {
+                key = theView.getkeytext();
+                Detext = theView.getdetext();
+
+                int[][] nfo;
+                nfo = DecryptModel.decipher(format(Detext, "CipherText"), format(key, "Key"));
+                theView.setDecryptTextOutput(formatIntToStr(nfo));
+
+            } catch (Exception abc) {
+                abc.getMessage();
+            }
+
+        }
+    }
+
     /*
     INPUT: String input - to convert, type: 1 is Key, 2 is Input
      */
-    public int[][] format(String in, int type) {
-        String w;
+    public int[][] format(String in, String type) {
         int[][] formattedIn; //formatted entext
-        if (type == 1) {
-            w = " Key ";
-        } else {
-            w = " Input ";
-        }
         //check if input is too big
         if (in.length() > 16) { //16 is 1 byte so 128 bits
             JFrame frame = new JFrame();
-            JOptionPane.showMessageDialog(frame, "Error: Please enter a" + w + "value less than 128 bits \n ie. Thats my Kung Fu", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Error: Please enter a" + type + "value less than 128 bits \n ie. Thats my Kung Fu", "Error", JOptionPane.ERROR_MESSAGE);
         }
         //check if padding is needed
         if (in.length() < 16) {
             in = padding(in);
         }
-        formattedIn = formatStrToInt(in); //is the formatted plaintext
+        formattedIn = formatStrToInt(in, type); //is the formatted plaintext
         return formattedIn;
     }
 
@@ -143,7 +193,7 @@ public class EnigmaController {
         return key;
     }
 
-    public int[][] formatStrToInt(String Entext) {
+    public int[][] formatStrToInt(String Entext, String type) {
         int[] ans = new int[16];
         for (int a = 0; a < 16; a++) {
             char[] arrayOfChars = Entext.toCharArray();
@@ -154,10 +204,16 @@ public class EnigmaController {
         int count = 0;
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                state[c][r] = (int) ans[count];
+                if ("PlainText".equals(type) || "CipherText".equals(type)) {
+                    state[c][r] = (int) ans[count];  //BUG - simple need to go back and re work 
+                } else {
+                    state[r][c] = (int) ans[count];  //BUG - simple need to go back and re work 
+
+                }
                 count++;
             }
         }
+
         return state;
     }
 
@@ -190,26 +246,5 @@ public class EnigmaController {
             System.out.println(Arrays.toString(pivot1));
         }
 
-    }
-
-    class DecryptListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String key;
-            String Detext;
-            try {
-                key = theView.getkeytext();
-                Detext = theView.getdetext();
-
-                int[][] nfo;
-                nfo = DecryptModel.decipher(format(Detext, 2), format(key, 1));
-                theView.setDecryptTextOutput(formatIntToStr(nfo));
-
-            } catch (Exception abc) {
-                abc.getMessage();
-            }
-
-        }
     }
 }

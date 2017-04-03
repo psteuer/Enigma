@@ -19,30 +19,25 @@ public class Encrypt extends Cipher {
         int[][] key = keyin;
         int round = 0;
         int[][] expKey = new int[4][44]; //total of 176 bytes, 4 columns- each column a "word", 44 "words"
-        
-        
+
+        int[][] key2test = {{0xe2, 0x91, 0xB1, 0xD6}, {0x32, 0x12, 0x59, 0x79}, {0xFC, 0x91, 0xe4, 0xA2}, {0xf1, 0x88, 0xe6, 0x93}};
+        System.out.print("key test: ");
+        hexprint(key2test);
+
         expKey = KeyScheduler(key);
-        System.out.println("THIS IS THE FULL KEY: \n");
-        printRows(expKey);
-        int keysec = 0;
         state = AddRoundKey(state, expKey, round);
-        keysec++;
         for (round = 0; round < NR; round++) {
             state = SubBytes(state);
             state = myShiftRows(state);
             state = MixColumns(state);
             state = AddRoundKey(state, expKey, round);
-            keysec++;
         }
-        System.out.println();
         state = SubBytes(state);
         state = myShiftRows(state);
         state = AddRoundKey(state, expKey, round);
-        
-        
-        
+
         System.out.println("AND THE FINAL OUT COME IS...... \n");
-        System.out.println(Arrays.deepToString(state));
+        hexprint(state);
         return state;
     }
 

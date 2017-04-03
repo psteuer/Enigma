@@ -5,6 +5,8 @@
  */
 package enigma;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Paul
@@ -16,19 +18,22 @@ public class Decrypt extends Cipher {
 
         int[][] state = in;
         int[][] key = keyin;
+        int[][] expKey;
 
-        /*
-        state = AddRoundKey(state, key);
-        for (int round = 1; round < Nr; round++) {
-            state = myInvShiftRows(state);
+        expKey = KeyScheduler(key);
+
+        int round = 0;
+        state = AddRoundKey(state, key, round);
+        for (round = 1; round < NR; round++) {
             state = invSubBytes(state);
-            state = AddRoundKey(state, key);
-            state = invMixColumns(state);
+            state = myInvShiftRows(state);
+            state = InvMixColumns(state);
+            state = AddRoundKey(state, key, round);
         }
-        myInvShiftRows(state);
         invSubBytes(state);
-        AddRoundKey(state, key);
-         */
+        myInvShiftRows(state);
+        AddRoundKey(state, key, round);
+
         return state;
     }
 
@@ -80,6 +85,7 @@ public class Decrypt extends Cipher {
         for (int r = 1; r < 4; r++) {
             System.arraycopy(shiftRight(state[r], r), 0, state[r], 0, 4);
         }
+        //System.out.println("Inv ShiftRows state: " + Arrays.deepToString(state));
         return state;
     }
 
@@ -88,16 +94,16 @@ public class Decrypt extends Cipher {
     OUTPUT: array
     Takes 1D array and shifts the rows to the Right by int off
      */
-    private int[] shiftRight(int[] row, int off) {
+    public int[] shiftRight(int[] row, int off) {
+        
         int[] temp = new int[off];
-
         for (int i = 0; i < off; i++) {
-            temp[i] = row[i];
+            temp[i] = row[row.length - off + i];
         }
         System.arraycopy(row, 0, row, off, row.length - off);
         for (int a = 0; a < off; a++) {
             row[a] = temp[a];
-        }
+        }                
         return row;
     }
 

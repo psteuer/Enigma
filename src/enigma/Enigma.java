@@ -29,7 +29,7 @@ public class Enigma {
         EnigmaController thecontroller = new EnigmaController(theView, encrypt, decrypt);
        
         
-        Result result = JUnitCore.runClasses(enigma.Enigma.class);
+        Result result = JUnitCore.runClasses(enigma.Tester.class);
          for(Failure failure : result.getFailures()){
              System.out.println(failure.toString());
          }

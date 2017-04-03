@@ -12,10 +12,19 @@ import java.awt.event.ActionListener;
  *
  * @author Paul
  */
-class EncryptFile implements ActionListener {
-    @Override
-    public void actionPerformed(ActionEvent e){
-        
+//extends EnigmaController
+public class EncryptFile  implements ActionListener {
+/*
+    public EncryptFile(EnigmaView theView, Encrypt WEncryptModel, Decrypt DecryptModel) {
+        super(theView, EncryptModel, DecryptModel);
+        theView.addGoEncryptFile(new EncryptFile());
+
     }
-    
+*/
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
+
 }
