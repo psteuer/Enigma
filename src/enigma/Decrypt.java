@@ -18,21 +18,19 @@ public class Decrypt extends Cipher {
 
         int[][] state = in;
         int[][] key = keyin;
-        int[][] expKey;
+        int[][] expKey = KeyScheduler(key);
 
-        expKey = KeyScheduler(key);
-
-        int round = 0;
-        state = AddRoundKey(state, key, round);
-        for (round = 1; round < NR; round++) {
-            state = invSubBytes(state);
+        int round = 11;
+        state = AddRoundKey(state, expKey, round);
+        for (round = NR - 1; round >= 1; round--) {
             state = myInvShiftRows(state);
+            state = invSubBytes(state);
+            state = AddRoundKey(state, expKey, round);
             state = InvMixColumns(state);
-            state = AddRoundKey(state, key, round);
         }
-        invSubBytes(state);
         myInvShiftRows(state);
-        AddRoundKey(state, key, round);
+        invSubBytes(state);
+        AddRoundKey(state, expKey, round);
 
         return state;
     }
@@ -95,7 +93,7 @@ public class Decrypt extends Cipher {
     Takes 1D array and shifts the rows to the Right by int off
      */
     public int[] shiftRight(int[] row, int off) {
-        
+
         int[] temp = new int[off];
         for (int i = 0; i < off; i++) {
             temp[i] = row[row.length - off + i];
@@ -103,7 +101,7 @@ public class Decrypt extends Cipher {
         System.arraycopy(row, 0, row, off, row.length - off);
         for (int a = 0; a < off; a++) {
             row[a] = temp[a];
-        }                
+        }
         return row;
     }
 

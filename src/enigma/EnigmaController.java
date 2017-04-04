@@ -95,6 +95,7 @@ public class EnigmaController {
             }
         }
 
+        //wrong place
         private void getfile(String fileName) throws IOException {
             boolean loadFromClasspath = true;
             BufferedReader reader = null;
@@ -218,6 +219,8 @@ public class EnigmaController {
     }
 
     public String formatIntToStr(int[][] nfo) {
+       // int[][] CipherText = {{0x29, 0x57, 0x40, 0x1a}, {0xc3, 0x14, 0x22, 0x02}, {0x50, 0x20, 0x99, 0xD7}, {0x5f, 0xf6, 0xb3, 0x3A}};
+        //nfo = CipherText;
         char[] n = new char[16];
         int count = 0;
         for (int r = 0; r < 4; r++) {
@@ -227,6 +230,7 @@ public class EnigmaController {
             }
         }
         String out = new String(n);
+        System.out.println(out);
         return out;
     }
 
