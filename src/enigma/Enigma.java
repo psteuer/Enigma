@@ -32,12 +32,7 @@ public class Enigma {
         Result result = JUnitCore.runClasses(enigma.Tester.class);
          for(Failure failure : result.getFailures()){
              System.out.println(failure.toString());
-         }
-        
-        
-        //background https://uigradients.com/# love couple
-        
-        
+         } 
     }
 
 }

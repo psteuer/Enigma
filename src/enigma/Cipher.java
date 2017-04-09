@@ -236,6 +236,7 @@ public class Cipher {
         }
     }
 
+    // </editor-fold>
     public void hexprint(int[][] state) {
         System.out.print(" [");
         for (int a = 0; a < 4; a++) {
@@ -248,14 +249,13 @@ public class Cipher {
 
                 }
             }
-            if(a !=3)
-            System.out.print("],");
-            else
+            if (a != 3) {
+                System.out.print("],");
+            } else {
                 System.out.print("]");
+            }
         }
         System.out.println("]");
 
     }
-
-    // </editor-fold>
 }

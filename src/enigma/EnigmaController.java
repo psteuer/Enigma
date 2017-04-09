@@ -5,16 +5,23 @@
  */
 package enigma;
 
+import java.util.Base64;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +41,7 @@ public class EnigmaController {
     public final EnigmaView theView;
     public final Encrypt EncryptModel;
     public final Decrypt DecryptModel;
-    public final String locaiton = "";
+    public String location = "";
 
     public EnigmaController(EnigmaView theView, Encrypt WEncryptModel, Decrypt DecryptModel) {
         this.theView = theView;
@@ -59,8 +66,62 @@ public class EnigmaController {
         theView.addDecryptListener(new DecryptListener());
         theView.addFileSelector(new FileSelector());
         theView.addGoEncryptFile(new EncryptFile());
-        theView.addGoDecryptFile(new DecryptFile());
+        theView.addGoDecryptFile(new DecrypFile1());   //////////////********************
         theView.addRand(new KeyRand());
+    }
+
+    class DecrypFile1 implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String key = theView.getkeytext();
+            String fileName = location;
+            boolean loadFromClasspath = true;
+            BufferedReader reader = null;
+            try {
+                if (loadFromClasspath) {
+                    // loading from classpath
+                    File initialFile = new File(location);
+                    InputStream in = new FileInputStream(initialFile);
+                    reader = new BufferedReader(new InputStreamReader(in));
+                } else {
+                    // load from file system
+                    reader = new BufferedReader(new FileReader(new File(fileName)));
+                }
+                String line;
+                
+                while ((line = reader.readLine()) != null) {
+                    //break line upinto bytes and feed into encrypt
+                    int leftOver = line.length() % 16;
+                    int fullTimes = line.length() / 16;
+                    for (int a = 0; a < fullTimes; a++) {
+                        String Entext = "";
+                        Entext = line.substring(a, 16);
+                        int[][] nfo;
+                        nfo = DecryptModel.decipher(format(Entext, "CipherText"), format(key, "Key"));
+                        //create file and print formatted NFO to it
+                    }
+                    String Entext = "";
+                    Entext = line.substring(line.length() - leftOver, line.length());
+                    int[][] nfo;
+                    nfo = DecryptModel.decipher(format(Entext, "CipherText"), format(key, "Key"));
+                    //create file and print formatted NFO to it
+                }
+
+            } catch (IOException c) {
+                JOptionPane.showMessageDialog(null, c.getMessage() + location, "File Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(DecryptFile.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+        }
+
     }
 
     class KeyRand implements ActionListener {
@@ -87,7 +148,6 @@ public class EnigmaController {
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
             int result = fileChooser.showOpenDialog(theView);
             if (result == JFileChooser.APPROVE_OPTION) {
-                String location;
                 File selectedFile = fileChooser.getSelectedFile();
                 location = selectedFile.getAbsolutePath();
                 theView.setIsFileText(location);
@@ -95,35 +155,6 @@ public class EnigmaController {
             }
         }
 
-        //wrong place
-        private void getfile(String fileName) throws IOException {
-            boolean loadFromClasspath = true;
-            BufferedReader reader = null;
-            try {
-                if (loadFromClasspath) {
-                    // loading from classpath
-                    // see the link above for more options
-                    InputStream in = getClass().getClassLoader().getResourceAsStream("absolute/path/to/file/inside/jar/lol.txt");
-                    reader = new BufferedReader(new InputStreamReader(in));
-                } else {
-                    // load from file system
-                    reader = new BufferedReader(new FileReader(new File(fileName)));
-                }
-
-                String line = null;
-                while ((line = reader.readLine()) != null) { //change to 16 bytes
-                    // do something with the line here
-                    System.out.println("Line read: " + line);
-                }
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, e.getMessage() + " for lol.txt", "File Error", JOptionPane.ERROR_MESSAGE);
-            } finally {
-                if (reader != null) {
-                    reader.close();
-                }
-            }
-
-        }
     }
 
     class EncryptListener implements ActionListener {
@@ -218,19 +249,27 @@ public class EnigmaController {
         return state;
     }
 
-    public String formatIntToStr(int[][] nfo) {
-       // int[][] CipherText = {{0x29, 0x57, 0x40, 0x1a}, {0xc3, 0x14, 0x22, 0x02}, {0x50, 0x20, 0x99, 0xD7}, {0x5f, 0xf6, 0xb3, 0x3A}};
-        //nfo = CipherText;
-        char[] n = new char[16];
+    //error
+    public String formatIntToStr(int[][] nfo) throws UnsupportedEncodingException {
+        int[][] CipherText = {{0x29, 0x57, 0x40, 0x1a}, {0xc3, 0x14, 0x22, 0x02}, {0x50, 0x20, 0x99, 0xD7}, {0x5f, 0xf6, 0xb3, 0x3A}};
+        nfo = CipherText;
+        byte[] n = new byte[16];
         int count = 0;
+
+        //int[] list = new int[16];
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                n[count] = (char) nfo[r][c];
+                n[count] = (byte) nfo[r][c];
                 count++;
             }
         }
-        String out = new String(n);
-        System.out.println(out);
+
+        //System.out.println("N = ");
+        //System.out.println(Arrays.toString(n));
+        String out = "";
+        // String out = new String(Base64.encodeBase64(n));
+        //String base64encodedString = Base64.getEncoder().encodeToString(out.getBytes("utf-8"));
+        // System.out.println("OUTPUT is: " + out);
         return out;
     }
 

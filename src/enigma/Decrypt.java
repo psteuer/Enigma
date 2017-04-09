@@ -15,23 +15,32 @@ public class Decrypt extends Cipher {
 
     public int[][] decipher(int[][] in, int[][] keyin) {
         //Decryption Algorithm
-
+        //System.out.println("DECRYPT ");
         int[][] state = in;
         int[][] key = keyin;
         int[][] expKey = KeyScheduler(key);
-
-        int round = 11;
+       // hexprint(expKey);
+        int round = NR;
+        //System.out.println("______________________________");
+       // System.out.println("Decrypt State: ");
+       // hexprint(state);
+       // System.out.println("Decrypt Key: ");
+       // hexprint(key);
         state = AddRoundKey(state, expKey, round);
-        for (round = NR - 1; round >= 1; round--) {
+        //System.out.println("hi");
+
+        for (round = NR - 1; round > 0; round--) {
             state = myInvShiftRows(state);
             state = invSubBytes(state);
             state = AddRoundKey(state, expKey, round);
             state = InvMixColumns(state);
         }
+
         myInvShiftRows(state);
         invSubBytes(state);
         AddRoundKey(state, expKey, round);
-
+        System.out.println("AND THE FINAL DECRYPTION OUTCOME IS...... \n");
+        hexprint(state);
         return state;
     }
 
@@ -42,6 +51,7 @@ public class Decrypt extends Cipher {
      */
     //NOTESTED_______________________________________________
     public int[][] InvMixColumns(int[][] state) {
+
         int[][] temp = new int[4][4];
 
         for (int c = 0; c < 4; c++) {
@@ -51,6 +61,7 @@ public class Decrypt extends Cipher {
             temp[3][c] = MULT11[state[0][c]] ^ MULT13[state[1][c]] ^ MULT9[state[2][c]] ^ MULT14[state[3][c]];
         }
         state = temp;
+
         return state;
     }
 
@@ -83,7 +94,6 @@ public class Decrypt extends Cipher {
         for (int r = 1; r < 4; r++) {
             System.arraycopy(shiftRight(state[r], r), 0, state[r], 0, 4);
         }
-        //System.out.println("Inv ShiftRows state: " + Arrays.deepToString(state));
         return state;
     }
 

@@ -101,6 +101,8 @@ public class EnigmaView extends javax.swing.JFrame {
         jSeparator4 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("~Enigma~");
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(36, 113, 163));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -132,6 +134,8 @@ public class EnigmaView extends javax.swing.JFrame {
         });
 
         DecryptTextbox.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        DecryptTextbox.setText("KcNQX1cUIPZAIpmzGgLXOg==");
+        DecryptTextbox.setToolTipText("");
 
         KeyTextBox.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         KeyTextBox.setText("Thats my Kung Fu");
@@ -264,16 +268,17 @@ public class EnigmaView extends javax.swing.JFrame {
                         .addComponent(jLabel1)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(FileSelector)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(FileSelector)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGap(127, 127, 127)
-                            .addComponent(EncryptButton))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(386, 386, 386)
-                            .addComponent(isFileUp))))
-                .addGap(0, 17, Short.MAX_VALUE))
+                            .addComponent(EncryptButton)
+                            .addGap(260, 260, 260)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(369, 369, 369)
+                        .addComponent(isFileUp, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -330,11 +335,11 @@ public class EnigmaView extends javax.swing.JFrame {
                             .addComponent(EncryptButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)))
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(FileSelector)
                 .addGap(18, 18, 18)
                 .addComponent(isFileUp)
-                .addGap(33, 33, 33)
+                .addGap(26, 26, 26)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(GoEncryptFile)
                     .addComponent(GoDecryptFile))

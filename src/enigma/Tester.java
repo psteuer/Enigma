@@ -39,11 +39,12 @@ public class Tester {
     int[][] key = {{0x54, 0x68, 0x61, 0x74}, {0x73, 0x20, 0x6D, 0x79}, {0x20, 0x4B, 0x75, 0x6E}, {0x67, 0x20, 0x46, 0x75}};
     int[][] stateKeyInput = {{0x54, 0x4F, 0x4E, 0x20}, {0x77, 0x6E, 0x69, 0x54}, {0x6F, 0x65, 0x6E, 0x77}, {0x20, 0x020, 0x65, 0x6F}};
 
-    int[][] PlainText = {{0x54, 0x77, 0x6F, 0x20}, {0x4F, 0x6E, 0x65, 0x20}, {0x4E, 0x69, 0x6E, 0x65}, {0x20, 0x54, 0x77, 0x6F}};
+    // int[][] PlainText = {{0x54, 0x77, 0x6F, 0x20}, {0x4F, 0x6E, 0x65, 0x20}, {0x4E, 0x69, 0x6E, 0x65}, {0x20, 0x54, 0x77, 0x6F}};
     int[][] CipherText = {{0x29, 0x57, 0x40, 0x1a}, {0xc3, 0x14, 0x22, 0x02}, {0x50, 0x20, 0x99, 0xD7}, {0x5f, 0xf6, 0xb3, 0x3A}};
 
     String str = "Thats my Kung Fu";
     String strShort = "Thats m";
+
     @Test
     public void testShiftRows() {
         Assert.assertArrayEquals(shiftLeftAns, etest.myShiftRows(shiftTest));//check!
@@ -51,7 +52,7 @@ public class Tester {
 
     @Test
     public void testinvShiftRows() {
-        Assert.assertArrayEquals(shiftTest, dtest.myInvShiftRows(shiftLeftAns)); //good
+        Assert.assertArrayEquals(shiftTest, dtest.myInvShiftRows(shiftLeftAns)); //Double checked!
     }
 
     @Test
@@ -66,7 +67,7 @@ public class Tester {
 
     @Test
     public void testinvSubBytes() {
-        Assert.assertArrayEquals(RooundKeyans, dtest.invSubBytes(subbytesAns)); //good
+        Assert.assertArrayEquals(RooundKeyans, dtest.invSubBytes(subbytesAns)); //Double Checked!
     }
 
     @Test
@@ -101,17 +102,24 @@ public class Tester {
 
     @Test
     public void TestformatIntToStr() {
-        Assert.assertEquals("Thats my Kung Fu", control.formatIntToStr(key));
+     //   Assert.assertEquals("Thats my Kung Fu", control.formatIntToStr(key));
     }
 
     @Test
     public void TestEncrypt() {
-        // Assert.assertArrayEquals(CipherText, etest.Encipher(PlainText, key));//good
+        Assert.assertArrayEquals(CipherText, etest.Encipher(stateTest, keyTest));//good
+    }
+
+    @Test
+    public void SecondTestEncrypt() {
+        int[][] zero = {{0x00,0x00,0x00,0x00},{0x00,0x00,0x00,0x00},{0x00,0x00,0x00,0x00},{0x00,0x00,0x00,0x00}};
+      //  Assert.assertArrayEquals(, etest.Encipher(zero, zero));//good
+
     }
 
     @Test
     public void TestDecrypt() {
-        // Assert.assertArrayEquals(PlainText, dtest.decipher(CipherText, key));//good
+       Assert.assertArrayEquals(stateTest, dtest.decipher(CipherText, key));//good
     }
 
     @Test
@@ -149,8 +157,13 @@ public class Tester {
         int[][] SecondKeyRound = {{0xe2, 0x91, 0xB1, 0xD6}, {0x32, 0x12, 0x59, 0x79}, {0xFC, 0x91, 0xe4, 0xA2}, {0xf1, 0x88, 0xe6, 0x93}};
         int[][] FirstRoundState = {{0xBA, 0x84, 0xE8, 0x1b}, {0x75, 0xA4, 0x8D, 0x40}, {0xF4, 0x8D, 0x06, 0x7D}, {0x7A, 0x32, 0x0E, 0x5D}};
         int[][] SecondKeyRoundANDFirstRoundStateYEILD = {{0x58, 0x15, 0x59, 0xCD}, {0x47, 0xb6, 0xD4, 0x3}, {0x08, 0x1c, 0xe2, 0xdf}, {0x8b, 0xba, 0xe8, 0xce}};
-        Assert.assertArrayEquals(SecondKeyRoundANDFirstRoundStateYEILD, etest.AddRoundKey(FirstRoundState, SecondKeyRound, 1)); 
-
+        Assert.assertArrayEquals(SecondKeyRoundANDFirstRoundStateYEILD, etest.AddRoundKey(FirstRoundState, SecondKeyRound, 1));
     }
+    
+    @Test
+    public void testActionListerners(){
+       // theView.addEncryptListener(listenForEncryptButton).click();
+    }
+    
 
 }

@@ -17,6 +17,10 @@ public class Encrypt extends Cipher {
     public int[][] Encipher(int[][] in, int[][] keyin) {
         int[][] state = in;
         int[][] key = keyin;
+
+        //int[][] state = {{0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}};
+        //int[][] key = {{0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}};
+
         int round = 0;
         int[][] expKey = new int[4][44]; //total of 176 bytes, 4 columns- each column a "word", 44 "words"
 
@@ -32,7 +36,7 @@ public class Encrypt extends Cipher {
         state = myShiftRows(state);
         state = AddRoundKey(state, expKey, round);
 
-        System.out.println("AND THE FINAL OUT COME IS...... \n");
+        System.out.println("AND THE FINAL ENCRYPTION OUTCOME IS...... \n");
         hexprint(state);
         return state;
     }
