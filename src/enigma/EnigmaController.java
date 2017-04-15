@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
@@ -89,7 +90,7 @@ public class EnigmaController {
                     reader = new BufferedReader(new FileReader(new File(fileName)));
                 }
                 String line;
-                
+
                 while ((line = reader.readLine()) != null) {
                     //break line upinto bytes and feed into encrypt
                     int leftOver = line.length() % 16;
@@ -168,9 +169,7 @@ public class EnigmaController {
                 Entext = theView.getentext();
                 int[][] nfo;
                 nfo = EncryptModel.Encipher(format(Entext, "PlainText"), format(key, "Key"));
-                //Sets the formatted output to textbox
                 theView.setEncryptTextOutput(formatIntToStr(nfo));
-
             } catch (Exception abc) {
                 abc.getMessage();
             }
@@ -189,15 +188,42 @@ public class EnigmaController {
                 key = theView.getkeytext();
                 Detext = theView.getdetext();
 
+                //Test
+                //byte[] encodedBytes = Base64.getEncoder().encode(Detext.getBytes());
+                byte[] decodedBytes = Base64.getDecoder().decode(Detext);
+                int[][] t1 = new int[4][4];
+
+                int count = 0;
+                for (int r = 0; r < 4; r++) {
+                    for (int c = 0; c < 4; c++) {
+                        t1[r][c] = decodedBytes[count];
+                        count++;
+                    }
+                }
                 int[][] nfo;
-                nfo = DecryptModel.decipher(format(Detext, "CipherText"), format(key, "Key"));
-                theView.setDecryptTextOutput(formatIntToStr(nfo));
+                nfo = DecryptModel.decipher(t1, format(key, "Key"));
+                theView.setDecryptTextOutput(plain(nfo));
 
             } catch (Exception abc) {
                 abc.getMessage();
             }
 
         }
+    }
+
+    public String plain(int[][] input) {
+        StringBuilder out = new StringBuilder();
+
+        int[] temp = new int[16];
+        int count = 0;
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                temp[count] = input[c][r];
+                out.append(Character.toString((char) temp[count]));
+                count++;
+            }
+        }
+        return out.toString();
     }
 
     /*
@@ -249,10 +275,8 @@ public class EnigmaController {
         return state;
     }
 
-    //error
     public String formatIntToStr(int[][] nfo) throws UnsupportedEncodingException {
-        int[][] CipherText = {{0x29, 0x57, 0x40, 0x1a}, {0xc3, 0x14, 0x22, 0x02}, {0x50, 0x20, 0x99, 0xD7}, {0x5f, 0xf6, 0xb3, 0x3A}};
-        nfo = CipherText;
+
         byte[] n = new byte[16];
         int count = 0;
 
@@ -263,14 +287,9 @@ public class EnigmaController {
                 count++;
             }
         }
+        byte[] encodedBytes = Base64.getEncoder().encode(n);
 
-        //System.out.println("N = ");
-        //System.out.println(Arrays.toString(n));
-        String out = "";
-        // String out = new String(Base64.encodeBase64(n));
-        //String base64encodedString = Base64.getEncoder().encodeToString(out.getBytes("utf-8"));
-        // System.out.println("OUTPUT is: " + out);
-        return out;
+        return new String(encodedBytes);
     }
 
     //Testing function
@@ -288,6 +307,5 @@ public class EnigmaController {
         for (int[] pivot1 : pivot) {
             System.out.println(Arrays.toString(pivot1));
         }
-
     }
 }

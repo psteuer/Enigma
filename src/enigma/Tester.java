@@ -102,7 +102,7 @@ public class Tester {
 
     @Test
     public void TestformatIntToStr() {
-     //   Assert.assertEquals("Thats my Kung Fu", control.formatIntToStr(key));
+        //   Assert.assertEquals("Thats my Kung Fu", control.formatIntToStr(key));
     }
 
     @Test
@@ -112,14 +112,23 @@ public class Tester {
 
     @Test
     public void SecondTestEncrypt() {
-        int[][] zero = {{0x00,0x00,0x00,0x00},{0x00,0x00,0x00,0x00},{0x00,0x00,0x00,0x00},{0x00,0x00,0x00,0x00}};
-      //  Assert.assertArrayEquals(, etest.Encipher(zero, zero));//good
+        int[][] zero = {{0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}};
+        int[][] ZeroEans = {{0x66, 0xEF, 0x88, 0xCA}, {0xE9, 0x8A, 0x4C, 0x34}, {0x4b, 0x2c, 0xfa, 0x2b}, {0xd4, 0x3b, 0x59, 0x2e}};
+        Assert.assertArrayEquals(ZeroEans, etest.Encipher(zero, zero));//good
+
+    }
+
+    @Test
+    public void SecondTestDecrypt() {
+        int[][] ZeroEans = {{0x66, 0xEF, 0x88, 0xCA}, {0xE9, 0x8A, 0x4C, 0x34}, {0x4b, 0x2c, 0xfa, 0x2b}, {0xd4, 0x3b, 0x59, 0x2e}};
+        int[][] zero = {{0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}};
+        Assert.assertArrayEquals(zero, dtest.decipher(ZeroEans, zero));//good
 
     }
 
     @Test
     public void TestDecrypt() {
-       Assert.assertArrayEquals(stateTest, dtest.decipher(CipherText, key));//good
+        Assert.assertArrayEquals(stateTest, dtest.decipher(CipherText, key));//good
     }
 
     @Test
@@ -159,11 +168,16 @@ public class Tester {
         int[][] SecondKeyRoundANDFirstRoundStateYEILD = {{0x58, 0x15, 0x59, 0xCD}, {0x47, 0xb6, 0xD4, 0x3}, {0x08, 0x1c, 0xe2, 0xdf}, {0x8b, 0xba, 0xe8, 0xce}};
         Assert.assertArrayEquals(SecondKeyRoundANDFirstRoundStateYEILD, etest.AddRoundKey(FirstRoundState, SecondKeyRound, 1));
     }
-    
+
     @Test
-    public void testActionListerners(){
-       // theView.addEncryptListener(listenForEncryptButton).click();
+    public void testActionListerners() {
+        // theView.addEncryptListener(listenForEncryptButton).click();
     }
     
+    @Test
+    public void testPlain(){
+        Assert.assertEquals("Two One Nine Two", control.plain(stateTest));
+    }
+            
 
 }
