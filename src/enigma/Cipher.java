@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  *
  * @author tuf67096 This is the model for the MVC pattern Both Encrypt and
- * Decrypt extend this class
+ * Decrypt/Encrypt extend this class
  */
 public class Cipher {
 

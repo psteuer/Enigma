@@ -97,6 +97,7 @@ public class Tester {
 
     @Test
     public void testRand() {
+        theView.setkeytext("0123456789101112");
         Assert.assertEquals(16, theView.getkeytext().length());
     }
 
@@ -167,16 +168,10 @@ public class Tester {
         int[][] FirstRoundState = {{0xBA, 0x84, 0xE8, 0x1b}, {0x75, 0xA4, 0x8D, 0x40}, {0xF4, 0x8D, 0x06, 0x7D}, {0x7A, 0x32, 0x0E, 0x5D}};
         int[][] SecondKeyRoundANDFirstRoundStateYEILD = {{0x58, 0x15, 0x59, 0xCD}, {0x47, 0xb6, 0xD4, 0x3}, {0x08, 0x1c, 0xe2, 0xdf}, {0x8b, 0xba, 0xe8, 0xce}};
         Assert.assertArrayEquals(SecondKeyRoundANDFirstRoundStateYEILD, etest.AddRoundKey(FirstRoundState, SecondKeyRound, 1));
-    }
-
-    @Test
-    public void testActionListerners() {
-        // theView.addEncryptListener(listenForEncryptButton).click();
-    }
-    
+    }    
     @Test
     public void testPlain(){
-        Assert.assertEquals("Two One Nine Two", control.plain(stateTest));
+        Assert.assertEquals("Two One Nine Two", control.intTostr(stateTest));
     }
             
 

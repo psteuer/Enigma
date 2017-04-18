@@ -5,7 +5,6 @@
  */
 package enigma;
 
-import java.util.Arrays;
 import static enigma.Cipher.NR;
 
 /**

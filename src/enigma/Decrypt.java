@@ -5,8 +5,6 @@
  */
 package enigma;
 
-import java.util.Arrays;
-
 /**
  *
  * @author Paul

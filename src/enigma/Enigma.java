@@ -1,13 +1,6 @@
 package enigma;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URLClassLoader;
-import javax.imageio.ImageIO;
-import javax.swing.UIManager.LookAndFeelInfo;
+
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -27,12 +20,12 @@ public class Enigma {
         Encrypt encrypt = new Encrypt();
         Decrypt decrypt = new Decrypt();
         EnigmaController thecontroller = new EnigmaController(theView, encrypt, decrypt);
-       
-        
+
         Result result = JUnitCore.runClasses(enigma.Tester.class);
-         for(Failure failure : result.getFailures()){
-             System.out.println(failure.toString());
-         } 
+        for (Failure failure : result.getFailures()) {
+            System.out.println(failure.toString());
+        }
+
     }
 
 }

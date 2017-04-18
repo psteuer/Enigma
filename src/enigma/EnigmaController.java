@@ -5,23 +5,16 @@
  */
 package enigma;
 
-import java.util.Base64;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
 import java.util.logging.Level;
@@ -66,17 +59,18 @@ public class EnigmaController {
         theView.addEncryptListener(new EncryptListener());
         theView.addDecryptListener(new DecryptListener());
         theView.addFileSelector(new FileSelector());
-        theView.addGoEncryptFile(new EncryptFile());
+        theView.addGoEncryptFile(new EncryptFile1());
         theView.addGoDecryptFile(new DecrypFile1());   //////////////********************
         theView.addRand(new KeyRand());
     }
 
-    class DecrypFile1 implements ActionListener {
+    class EncryptFile1 implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             String key = theView.getkeytext();
             String fileName = location;
+            String outputfilename = location.substring(0, location.length() - 4) + "Encrypted.txt";
             boolean loadFromClasspath = true;
             BufferedReader reader = null;
             try {
@@ -91,24 +85,82 @@ public class EnigmaController {
                 }
                 String line;
 
+                File outputfile = new File(outputfilename);
+                FileWriter fileout = new FileWriter(outputfile);
                 while ((line = reader.readLine()) != null) {
                     //break line upinto bytes and feed into encrypt
                     int leftOver = line.length() % 16;
                     int fullTimes = line.length() / 16;
                     for (int a = 0; a < fullTimes; a++) {
-                        String Entext = "";
-                        Entext = line.substring(a, 16);
-                        int[][] nfo;
-                        nfo = DecryptModel.decipher(format(Entext, "CipherText"), format(key, "Key"));
-                        //create file and print formatted NFO to it
-                    }
-                    String Entext = "";
-                    Entext = line.substring(line.length() - leftOver, line.length());
-                    int[][] nfo;
-                    nfo = DecryptModel.decipher(format(Entext, "CipherText"), format(key, "Key"));
-                    //create file and print formatted NFO to it
-                }
+                        String Entext = line.substring(a * 16, 16 + (a * 16));
+                        System.out.println("Entext is : " + Entext);
+                        int[][] nfo = EncryptModel.Encipher(format(Entext, "PlainText"), format(key, "Key"));
+                        fileout.write(formatIntToStr(nfo));
 
+                    }
+                    if (leftOver > 0) {
+                        String Entext = line.substring(line.length() - leftOver, line.length());
+                        int[][] nfo = EncryptModel.Encipher(format(Entext, "PlainText"), format(key, "Key"));
+                        fileout.write(formatIntToStr(nfo));
+                    }
+                }
+                fileout.close();
+            } catch (IOException c) {
+                JOptionPane.showMessageDialog(null, c.getMessage() + location, "File Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(EncryptFile.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }
+    }
+
+    class DecrypFile1 implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String key = theView.getkeytext();
+            String fileName = location;
+            String outputfilename = location.substring(0, location.length() - 4) + "Decrypted.txt";
+            boolean loadFromClasspath = true;
+            BufferedReader reader = null;
+            try {
+                if (loadFromClasspath) {
+                    // loading from classpath
+                    File initialFile = new File(location);
+                    InputStream in = new FileInputStream(initialFile);
+                    reader = new BufferedReader(new InputStreamReader(in));
+                } else {
+                    // load from file system
+                    reader = new BufferedReader(new FileReader(new File(fileName)));
+                }
+                String line;
+
+                File outputfile = new File(outputfilename);
+                FileWriter fileout = new FileWriter(outputfile);
+                while ((line = reader.readLine()) != null) {
+                    //break line upinto bytes and feed into encrypt
+                    int leftOver = line.length() % 24;
+                    int fullTimes = line.length() / 24;
+                    for (int a = 0; a < fullTimes; a++) {
+                        String detext = line.substring(a * 24, (24 * a) + 24);
+                        System.out.println("DETEXT IS: " + detext);
+                        int[][] nfo = DecryptModel.decipher(base64Toint(detext), format(key, "Key"));
+
+                        fileout.write(intTostr(nfo));
+
+                    }
+                    if (leftOver > 0) {
+                        String detext = line.substring(line.length() - leftOver, line.length());
+                        int[][] nfo = DecryptModel.decipher(base64Toint(detext), format(key, "Key"));
+                        fileout.write(intTostr(nfo));
+                    }
+                }
+                fileout.close();
             } catch (IOException c) {
                 JOptionPane.showMessageDialog(null, c.getMessage() + location, "File Error", JOptionPane.ERROR_MESSAGE);
             } finally {
@@ -173,9 +225,7 @@ public class EnigmaController {
             } catch (Exception abc) {
                 abc.getMessage();
             }
-
         }
-
     }
 
     class DecryptListener implements ActionListener {
@@ -187,23 +237,8 @@ public class EnigmaController {
             try {
                 key = theView.getkeytext();
                 Detext = theView.getdetext();
-
-                //Test
-                //byte[] encodedBytes = Base64.getEncoder().encode(Detext.getBytes());
-                byte[] decodedBytes = Base64.getDecoder().decode(Detext);
-                int[][] t1 = new int[4][4];
-
-                int count = 0;
-                for (int r = 0; r < 4; r++) {
-                    for (int c = 0; c < 4; c++) {
-                        t1[r][c] = decodedBytes[count];
-                        count++;
-                    }
-                }
-                int[][] nfo;
-                nfo = DecryptModel.decipher(t1, format(key, "Key"));
-                theView.setDecryptTextOutput(plain(nfo));
-
+                int[][] nfo = DecryptModel.decipher(base64Toint(Detext), format(key, "Key"));
+                theView.setDecryptTextOutput(intTostr(nfo));
             } catch (Exception abc) {
                 abc.getMessage();
             }
@@ -211,9 +246,21 @@ public class EnigmaController {
         }
     }
 
-    public String plain(int[][] input) {
-        StringBuilder out = new StringBuilder();
+    public int[][] base64Toint(String Detext) {
+        byte[] decodedBytes = Base64.getDecoder().decode(Detext);
+        int[][] t1 = new int[4][4];
+        int count = 0;
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                t1[r][c] = decodedBytes[count];
+                count++;
+            }
+        }
+        return t1;
+    }
 
+    public String intTostr(int[][] input) {
+        StringBuilder out = new StringBuilder();
         int[] temp = new int[16];
         int count = 0;
         for (int r = 0; r < 4; r++) {
@@ -230,17 +277,17 @@ public class EnigmaController {
     INPUT: String input - to convert, type: 1 is Key, 2 is Input
      */
     public int[][] format(String in, String type) {
-        int[][] formattedIn; //formatted entext
+        int[][] formattedIn = new int[4][4]; //formatted entext
         //check if input is too big
         if (in.length() > 16) { //16 is 1 byte so 128 bits
             JFrame frame = new JFrame();
             JOptionPane.showMessageDialog(frame, "Error: Please enter a" + type + "value less than 128 bits \n ie. Thats my Kung Fu", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        //check if padding is needed
-        if (in.length() < 16) {
+        } else if (in.length() < 16) {
             in = padding(in);
         }
-        formattedIn = formatStrToInt(in, type); //is the formatted plaintext
+        if (in.length() == 16) {
+            formattedIn = formatStrToInt(in, type); //is the formatted plaintext
+        }
         return formattedIn;
     }
 
@@ -275,12 +322,9 @@ public class EnigmaController {
         return state;
     }
 
-    public String formatIntToStr(int[][] nfo) throws UnsupportedEncodingException {
-
+    public String formatIntToStr(int[][] nfo) {
         byte[] n = new byte[16];
         int count = 0;
-
-        //int[] list = new int[16];
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
                 n[count] = (byte) nfo[r][c];
@@ -288,24 +332,6 @@ public class EnigmaController {
             }
         }
         byte[] encodedBytes = Base64.getEncoder().encode(n);
-
         return new String(encodedBytes);
-    }
-
-    //Testing function
-    public void printRows(int[][] key) {
-        int[][] pivot = new int[key[0].length][];
-        for (int row = 0; row < key[0].length; row++) {
-            pivot[row] = new int[key.length];
-        }
-
-        for (int row = 0; row < key.length; row++) {
-            for (int col = 0; col < key[row].length; col++) {
-                pivot[col][row] = key[row][col];
-            }
-        }
-        for (int[] pivot1 : pivot) {
-            System.out.println(Arrays.toString(pivot1));
-        }
     }
 }
