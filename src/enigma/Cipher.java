@@ -1,7 +1,5 @@
 package enigma;
 
-import java.util.Arrays;
-
 /**
  *
  * @author tuf67096 This is the model for the MVC pattern Both Encrypt and
@@ -9,10 +7,17 @@ import java.util.Arrays;
  */
 public class Cipher {
 
-    public static final int NB = 4;
-    public static final int NR = 10;
-    public static final int NK = 4;
+    /*
+    These are the variables to change to change from 128 bit, 192, or 256 - some extra code is also needed
+    AES-128) NK=4,NB=4,NR=10
+    AES-192) NK=6,NB=4,NR=12
+    AES-256) NK=8,NB=4,NR=14
+     */
+    public static final int NB = 4;//plaintext block size never changes (as of 2017)
+    public static final int NR = 10; //Number of rounds
+    public static final int NK = 4; //key block size
     public static final int NW = NB * (NR + 1); //so 44 for 128 bit encryption
+    public static final int NWB = 4 * NB * (NR + 1); //number of word bytes
     //sbox is a 16x16 lookup table
     //All tables found on wikipedia
     public static final int[][] SBOX = {{0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76}, {0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0}, {0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15}, {0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75}, {0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84}, {0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf}, {0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8}, {0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2}, {0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73}, {0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb}, {0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79}, {0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08}, {0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a}, {0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e}, {0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf}, {0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16}};
@@ -123,10 +128,13 @@ public class Cipher {
         0x37, 0x39, 0x2b, 0x25, 0x0f, 0x01, 0x13, 0x1d, 0x47, 0x49, 0x5b, 0x55, 0x7f, 0x71, 0x63, 0x6d,
         0xd7, 0xd9, 0xcb, 0xc5, 0xef, 0xe1, 0xf3, 0xfd, 0xa7, 0xa9, 0xbb, 0xb5, 0x9f, 0x91, 0x83, 0x8d};
 
-    public Cipher() {
-        //NOTHING HERE
-    }
-
+    
+    /**
+     * Used for keyCore and encrypt
+     * @param row which row in the matrix you want to shift
+     * @param off the amount you want to rotate left
+     * @return row, the changed row
+     */
     public int[] shiftleft(int[] row, int off) {
         int[] temp = new int[off];
 
@@ -134,40 +142,45 @@ public class Cipher {
             temp[i] = row[i];
         }
         System.arraycopy(row, off, row, 0, row.length - off);
-        for (int a = 4 - off; a < 4; a++) {
+        for (int a = 4 - off; a < NB; a++) {
             row[a] = temp[off + a - row.length];
         }
         return row;
     }
 
-    // <editor-fold defaultstate="collapsed" desc=" AddRoundKey + KeySched">
-    /*
-    INPUT: state & key
-    OUTPUT: state
-    This simply XOR's the state to the key
-    This works for ecryption and decryption
-    NOTE: XOR is the same as addition in Falois Field GF(2^8)
+ 
+    
+    /**
+     * Adds the key to the state matrix
+     * @param state
+     * @param key full key matrix
+     * @param round to specify the location in the key to XOR
+     * @return modified state
      */
     public int[][] AddRoundKey(int[][] state, int[][] key, int round) {
-        int wordplace = round * 4;
-        for (int row = 0; row < 4; row++) {
+        int wordplace = round * NB;
+        for (int row = 0; row < NB; row++) {
             for (int col = 0; col < 4; col++) {
                 //simple XOR each state int to corrisponding key int
-                state[row][col] = state[row][col] ^ key[row][col + wordplace]; //problem here
+                state[row][col] = state[row][col] ^ key[row][col + wordplace]; 
             }
         }
 
         return state;
     }
 
+    /**
+     *Creates full key, for 128 key makes a 4x44 key matrix
+     * @param key
+     * @return expkey[][]
+     */
     public int[][] KeyScheduler(int[][] key) {
-        int[][] expKey = new int[4][44]; // 44 rows* 4 col = 176 bytes
-        int numWords = 44;
+        int[][] expKey = new int[NB][NW]; // 44 rows* 4 col = 176 bytes
 
         //saves the first 16 bytes into expKey array
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 4; col++) {
-                expKey[col][row] = key[row][col]; //Heres the problem !!!!!!!!!!!!!!!!!!!!!!!!!
+                expKey[col][row] = key[row][col];
             }
         }
         int rconPlace = 1;
@@ -197,46 +210,40 @@ public class Cipher {
                 }
                 place += 4; //increase by word   
             }
+            //add more here if you want to extend for bigger key sizes
         }
         return expKey;
     }
 
-    public int[] KeyCore(int[] temp, int rconPlace) {
+    
+    /**
+     * 
+     * @param inputOriginal
+     * @param rconPlace
+     * @return output, new word to be manipulated more and added to the expkey
+     */
+    public int[] KeyCore(int[] inputOriginal, int rconPlace) {
         //"copy the input over to the output" 
-        int[] out = temp;
+        int[] output = inputOriginal;
         //rotate 8 bits to the left, so one byte to the left operation to rotate the output eight bis to the left
-        out = shiftleft(temp, 1);
+        output = shiftleft(inputOriginal, 1);
         //Apply s-box on all four individual bytes in the output word
         for (int a = 0; a < 4; a++) {
             //int e = state[row][col] & 0x0F;  //works for E
             //int c = (state[row][col] >> 4) & 0x0F; //works for 6?
-            int e = temp[a] & 0x0F;
-            int c = (temp[a] >> 4) & 0x0F;
-            out[a] = SBOX[c][e];
+            int e = inputOriginal[a] & 0x0F;
+            int c = (inputOriginal[a] >> 4) & 0x0F;
+            output[a] = SBOX[c][e];
         }
         //Perform rcon opeation on the leftmost bye?
-        out[0] ^= RCON[rconPlace];
-        return out;
+        output[0] ^= RCON[rconPlace];
+        return output;
     }
-
-    public void printRows(int[][] key) {
-        int[][] pivot = new int[key[0].length][];
-        for (int row = 0; row < key[0].length; row++) {
-            pivot[row] = new int[key.length];
-        }
-
-        for (int row = 0; row < key.length; row++) {
-            for (int col = 0; col < key[row].length; col++) {
-                pivot[col][row] = key[row][col];
-
-            }
-        }
-        for (int row = 0; row < pivot.length; row++) {
-            System.out.println(Arrays.toString(pivot[row]));
-        }
-    }
-
-    // </editor-fold>
+    
+    /**
+     * Debugging function, prints 2D array out in hex
+     * @param state 
+     */
     public void hexprint(int[][] state) {
         System.out.print(" [");
         for (int a = 0; a < 4; a++) {

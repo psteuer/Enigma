@@ -145,11 +145,11 @@ public class EnigmaView extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Key - Max 16 Bits");
+        jLabel1.setText("Key - Max 16 Bytes");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Text to Encrypt (Plaintext) - Max 16 Bits");
+        jLabel2.setText("Text to Encrypt (Plaintext) - Max 16 Bytes");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));

@@ -1,31 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package enigma;
 
 /**
  *
- * @author Paul
+ * @author Paul Extends Cipher, this is the decrypt algorithm
  */
 public class Decrypt extends Cipher {
 
-    public int[][] decipher(int[][] in, int[][] keyin) {
-        //Decryption Algorithm
-        //System.out.println("DECRYPT ");
-        int[][] state = in;
-        int[][] key = keyin;
+    /**
+     * Decrypt Function for AES
+     *
+     * @param state
+     * @param key
+     * @return state, decrypted
+     */
+    public int[][] decipher(int[][] state, int[][] key) {
+
         int[][] expKey = KeyScheduler(key);
-       // hexprint(expKey);
         int round = NR;
-        //System.out.println("______________________________");
-       // System.out.println("Decrypt State: ");
-       // hexprint(state);
-       // System.out.println("Decrypt Key: ");
-       // hexprint(key);
         state = AddRoundKey(state, expKey, round);
-        //System.out.println("hi");
 
         for (round = NR - 1; round > 0; round--) {
             state = myInvShiftRows(state);
@@ -37,37 +29,38 @@ public class Decrypt extends Cipher {
         myInvShiftRows(state);
         invSubBytes(state);
         AddRoundKey(state, expKey, round);
-        System.out.println("AND THE FINAL DECRYPTION OUTCOME IS...... \n");
+        System.out.println("THE FINAL DECRYPTION OUTCOME IS...");
         hexprint(state);
         return state;
     }
 
-    /*
-    INPUT: int[][] state
-    OUTPUT: int[][] state
-    Performes linear transofrmation on state
+    /**
+     * Performs linear transformation on state Look up tables are in Cipher, for
+     * doing GF(2^8) multiplication
+     *
+     * @param state
+     * @return ModifiedState, changed state matrix
      */
-    //NOTESTED_______________________________________________
     public int[][] InvMixColumns(int[][] state) {
 
-        int[][] temp = new int[4][4];
+        int[][] ModifiedState = new int[4][4];
 
         for (int c = 0; c < 4; c++) {
-            temp[0][c] = MULT14[state[0][c]] ^ MULT11[state[1][c]] ^ MULT13[state[2][c]] ^ MULT9[state[3][c]];
-            temp[1][c] = MULT9[state[0][c]] ^ MULT14[state[1][c]] ^ MULT11[state[2][c]] ^ MULT13[state[3][c]];
-            temp[2][c] = MULT13[state[0][c]] ^ MULT9[state[1][c]] ^ MULT14[state[2][c]] ^ MULT11[state[3][c]];
-            temp[3][c] = MULT11[state[0][c]] ^ MULT13[state[1][c]] ^ MULT9[state[2][c]] ^ MULT14[state[3][c]];
+            ModifiedState[0][c] = MULT14[state[0][c]] ^ MULT11[state[1][c]] ^ MULT13[state[2][c]] ^ MULT9[state[3][c]];
+            ModifiedState[1][c] = MULT9[state[0][c]] ^ MULT14[state[1][c]] ^ MULT11[state[2][c]] ^ MULT13[state[3][c]];
+            ModifiedState[2][c] = MULT13[state[0][c]] ^ MULT9[state[1][c]] ^ MULT14[state[2][c]] ^ MULT11[state[3][c]];
+            ModifiedState[3][c] = MULT11[state[0][c]] ^ MULT13[state[1][c]] ^ MULT9[state[2][c]] ^ MULT14[state[3][c]];
         }
-        state = temp;
 
-        return state;
+        return ModifiedState;
     }
 
-    /*
-    INPUT: int[][] state
-    OUTPUT: int[][] state
-    NOTES: each entry substitued with corrisponding s-box entry
-    For instance: 0x6E is substituted by entry of s-box in row 6, column E
+    /**
+     * Uses INV_SBOX lookup table on all elements in state For instance: 0x6E is
+     * substituted by entry of s-box in row 6, column E
+     *
+     * @param state
+     * @return state, this is the modified state
      */
     public int[][] invSubBytes(int[][] state) {
         for (int row = 0; row < 4; row++) {
@@ -82,11 +75,12 @@ public class Decrypt extends Cipher {
         return state;
     }
 
-    /*
-    INPUT: 2D array state array
-    OUTPUT: 2D State array
-    Shifts rows 2,3,4 by offsets of 1,2,3 respectively
-    Calls the rightshift function
+    /**
+     * Shifts rows to the right, calls shiftRight function Shifts rows 2,3,4 by
+     * offsets of 1,2,3 respectively
+     *
+     * @param state
+     * @return state
      */
     public int[][] myInvShiftRows(int[][] state) {
         for (int r = 1; r < 4; r++) {
@@ -95,21 +89,21 @@ public class Decrypt extends Cipher {
         return state;
     }
 
-    /*
-    INPUT: int[] array , int off 
-    OUTPUT: array
-    Takes 1D array and shifts the rows to the Right by int off
+    /**
+     * Shifts row to the right based on offset
+     *
+     * @param row
+     * @param offset, amount you want to shift row
+     * @return row, shifted row
      */
-    public int[] shiftRight(int[] row, int off) {
+    public int[] shiftRight(int[] row, int offset) {
 
-        int[] temp = new int[off];
-        for (int i = 0; i < off; i++) {
-            temp[i] = row[row.length - off + i];
+        int[] rowBeginning = new int[offset];
+        for (int i = 0; i < offset; i++) {
+            rowBeginning[i] = row[row.length - offset + i];
         }
-        System.arraycopy(row, 0, row, off, row.length - off);
-        for (int a = 0; a < off; a++) {
-            row[a] = temp[a];
-        }
+        System.arraycopy(row, 0, row, offset, row.length - offset);
+        System.arraycopy(rowBeginning, 0, row, 0, offset);
         return row;
     }
 

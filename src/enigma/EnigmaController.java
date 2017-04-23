@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package enigma;
 
 import java.awt.event.ActionEvent;
@@ -246,19 +241,29 @@ public class EnigmaController {
         }
     }
 
+    /**
+     * Takes string and outputs base64 integer, for the input of decrypt
+     * @param Detext
+     * @return Inbase64, integers representation of base64 bytes
+     */
     public int[][] base64Toint(String Detext) {
         byte[] decodedBytes = Base64.getDecoder().decode(Detext);
-        int[][] t1 = new int[4][4];
+        int[][] InBase64 = new int[4][4];
         int count = 0;
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                t1[r][c] = decodedBytes[count];
+                InBase64[r][c] = decodedBytes[count];
                 count++;
             }
         }
-        return t1;
+        return InBase64;
     }
 
+    /**
+     * For use in formatting the output of Decrypt
+     * @param input
+     * @return Normal ASCII string of characters
+     */
     public String intTostr(int[][] input) {
         StringBuilder out = new StringBuilder();
         int[] temp = new int[16];
@@ -291,13 +296,19 @@ public class EnigmaController {
         return formattedIn;
     }
 
-    public String padding(String key) {
-        int len = key.length();
+    /**
+     * Adds padding for format function
+     * @param strpadded
+     * @return strpadded, should be length of 16 bytes
+     */
+    public String padding(String strpadded) {
+        int len = strpadded.length();
         String space = new String(new char[16 - len]).replace('\0', ' ');
-        key = key + space;
-        return key;
+        strpadded = strpadded + space;
+        return strpadded;
     }
 
+    
     public int[][] formatStrToInt(String Entext, String type) {
         int[] ans = new int[16];
         for (int a = 0; a < 16; a++) {
@@ -322,6 +333,11 @@ public class EnigmaController {
         return state;
     }
 
+    /**
+     * Takes integer array and outputs base64 string, for use to encode the output of encrypt
+     * @param nfo, not formatted integer
+     * @return string encoded in base64
+     */
     public String formatIntToStr(int[][] nfo) {
         byte[] n = new byte[16];
         int count = 0;

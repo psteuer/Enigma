@@ -1,12 +1,11 @@
 package enigma;
 
-
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
 /**
- *
+ * Main class for Enigma, creates instance of MVC and for testing
  * @author tuf67096
  */
 public class Enigma {

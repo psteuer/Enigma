@@ -284,7 +284,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Key - Max 16 Bits"/>
+            <Property name="text" type="java.lang.String" value="Key - Max 16 Bytes"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
@@ -295,7 +295,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Text to Encrypt (Plaintext) - Max 16 Bits"/>
+            <Property name="text" type="java.lang.String" value="Text to Encrypt (Plaintext) - Max 16 Bytes"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel3">
