@@ -7,12 +7,6 @@ package enigma;
  */
 public class Cipher {
 
-    /*
-    These are the variables to change to change from 128 bit, 192, or 256 - as of now some extra code is also needed in key scheduler
-    AES-128) NK=4,NB=4,NR=10
-    AES-192) NK=6,NB=4,NR=12
-    AES-256) NK=8,NB=4,NR=14
-     */
     public int NB;//plaintext block size never changes (as of 2017)
     public int NR; //Number of rounds
     public int NK; //key block size
