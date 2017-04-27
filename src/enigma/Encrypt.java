@@ -5,13 +5,19 @@
  */
 package enigma;
 
-import static enigma.Cipher.NR;
-
 /**
  *
  * @author Paul
  */
 public class Encrypt extends Cipher {
+
+    public Encrypt(int nb, int nr, int nk) {
+        this.NB = nb;
+        this.NR = nr;
+        this.NK = nk;
+        this.NW = nb * (nr + 1);
+        this.NWB = 4 * nb * (nr + 1);
+    }
 
     /**
      * Encryption algorithm
@@ -21,11 +27,9 @@ public class Encrypt extends Cipher {
      * @return state - new encrypted state
      */
     public int[][] Encipher(int[][] state, int[][] key) {
-
+ 
         int round = 0;
-        int[][] expKey = new int[4][44]; //total of 176 bytes, 4 columns- each column a "word", 44 "words"
-
-        expKey = KeyScheduler(key);
+        int[][] expKey = KeyScheduler(key);
         state = AddRoundKey(state, expKey, round);
         for (round = 1; round < NR; round++) {
             state = SubBytes(state);
@@ -43,8 +47,9 @@ public class Encrypt extends Cipher {
     }
 
     /**
-     * Performs GF(2^8) multiplication on each element by lookup table 
-     * Performs linear transformation on state
+     * Performs GF(2^8) multiplication on each element by lookup table Performs
+     * linear transformation on state
+     *
      * @param state
      * @return state
      */
@@ -61,30 +66,29 @@ public class Encrypt extends Cipher {
         return state;
     }
 
-
-    
-    
     /**
-     *each entry substituted with s-box entry
-     * For instance: 0x6E is substituted by entry of s-box in row 6, column E
+     * each entry substituted with s-box entry For instance: 0x6E is substituted
+     * by entry of s-box in row 6, column E
+     *
      * @param state
-     * @return state, modified state 
+     * @return state, modified state
      */
     public int[][] SubBytes(int[][] state) {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < NB; col++) {
                 //break state apart into 2 bytes, use each byte for row/column lookup
-                int e = state[row][col] & 0x0F; 
+                int e = state[row][col] & 0x0F;
                 int c = (state[row][col] >> 4) & 0x0F;
                 state[row][col] = SBOX[c][e];
             }
         }
         return state;
     }
-    
+
     /**
-     * Shifts rows 2,3,4 by offsets of 1,2,3 respectively
-     * Calls the shiftleft() function in Cipher
+     * Shifts rows 2,3,4 by offsets of 1,2,3 respectively Calls the shiftleft()
+     * function in Cipher
+     *
      * @param state
      * @return state
      */

@@ -6,6 +6,14 @@ package enigma;
  */
 public class Decrypt extends Cipher {
 
+    public Decrypt(int nb, int nr, int nk) {
+        this.NB = nb;
+        this.NR = nr;
+        this.NK = nk;
+        this.NW = nb * (nr + 1);
+        this.NWB = 4 * nb * (nr + 1);
+    }
+
     /**
      * Decrypt Function for AES
      *

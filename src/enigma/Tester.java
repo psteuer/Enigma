@@ -10,12 +10,12 @@ import org.junit.Test;
  */
 public class Tester {
 
-    Encrypt etest = new Encrypt();
-    Decrypt dtest = new Decrypt();
+    Encrypt etest128 = new Encrypt(4,10,4);
+    Decrypt dtest = new Decrypt(4,10,4);
     EnigmaView theView = new EnigmaView();
-    Encrypt encrypt = new Encrypt();
-    Decrypt decrypt = new Decrypt();
-    EnigmaController control = new EnigmaController(theView, encrypt, decrypt);
+    Encrypt encrypt = new Encrypt(4,10,4);
+    Decrypt decrypt = new Decrypt(4,10,4);
+    EnigmaController control = new EnigmaController();
 
     int[][] SecondKeyRound = {{0xe2, 0x91, 0xB1, 0xD6}, {0x32, 0x12, 0x59, 0x79}, {0xFC, 0x91, 0xe4, 0xA2}, {0xf1, 0x88, 0xe6, 0x93}};
     int[][] FirstRoundState = {{0xBA, 0x84, 0xE8, 0x1b}, {0x75, 0xA4, 0x8D, 0x40}, {0xF4, 0x8D, 0x06, 0x7D}, {0x7A, 0x32, 0x0E, 0x5D}};
@@ -47,7 +47,7 @@ public class Tester {
 
     @Test
     public void testShiftRows() {
-        Assert.assertArrayEquals(shiftLeftAns, etest.myShiftRows(shiftTest));//check!
+        Assert.assertArrayEquals(shiftLeftAns, etest128.myShiftRows(shiftTest));//check!
     }
 
     @Test
@@ -57,12 +57,12 @@ public class Tester {
 
     @Test
     public void testAddRoundKey() {
-        Assert.assertArrayEquals(RooundKeyans, etest.AddRoundKey(stateTest, keyTest, 0)); //check!
+        Assert.assertArrayEquals(RooundKeyans, etest128.AddRoundKey(stateTest, keyTest, 0)); //check!
     }
 
     @Test
     public void testSubBytes() {
-        Assert.assertArrayEquals(subbytesAns, etest.SubBytes(RooundKeyans)); //check!
+        Assert.assertArrayEquals(subbytesAns, etest128.SubBytes(RooundKeyans)); //check!
     }
 
     @Test
@@ -72,7 +72,7 @@ public class Tester {
 
     @Test
     public void testMixColumns() {
-        Assert.assertArrayEquals(MixOutput, etest.MixColumns(MixInput)); //
+        Assert.assertArrayEquals(MixOutput, etest128.MixColumns(MixInput)); //
     }
 
     @Test
@@ -82,17 +82,17 @@ public class Tester {
 
     @Test
     public void format() {
-        Assert.assertArrayEquals(key, control.format("Thats my Kung Fu", "Key")); //key good
+        Assert.assertArrayEquals(keyTest, control.format("Thats my Kung Fu", "PlainText", 4)); //key good
     }
 
     @Test
     public void TestFormatStrToInt() {
-        // Assert.assertArrayEquals(key, control.formatStrToInt("Thats my Kung Fu")); //good
+        Assert.assertArrayEquals(keyTest, control.formatStrToInt("Thats my Kung Fu", "PlainText",  4)); //good
     }
 
     @Test
     public void testPadding() {
-        Assert.assertEquals(str.length(), control.padding(strShort).length());
+        Assert.assertEquals(str.length(), control.padding(strShort, 4).length());
     }
 
     @Test
@@ -108,14 +108,14 @@ public class Tester {
 
     @Test
     public void TestEncrypt() {
-        Assert.assertArrayEquals(CipherText, etest.Encipher(stateTest, keyTest));//good
+        Assert.assertArrayEquals(CipherText, etest128.Encipher(stateTest, keyTest));//good
     }
 
     @Test
     public void SecondTestEncrypt() {
         int[][] zero = {{0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}, {0x00, 0x00, 0x00, 0x00}};
         int[][] ZeroEans = {{0x66, 0xEF, 0x88, 0xCA}, {0xE9, 0x8A, 0x4C, 0x34}, {0x4b, 0x2c, 0xfa, 0x2b}, {0xd4, 0x3b, 0x59, 0x2e}};
-        Assert.assertArrayEquals(ZeroEans, etest.Encipher(zero, zero));//good
+        Assert.assertArrayEquals(ZeroEans, etest128.Encipher(zero, zero));//good
 
     }
 
@@ -151,7 +151,7 @@ public class Tester {
         int[] temp = {0x09, 0xcf, 0x4f, 0x3c};
         int[] ans = {0x8b, 0x84, 0xeb, 0x01};
         int rconplace = 1;
-        Assert.assertArrayEquals(ans, etest.KeyCore(temp, rconplace));//good
+        Assert.assertArrayEquals(ans, etest128.KeyCore(temp, rconplace));//good
     }
 
     @Test
@@ -167,7 +167,7 @@ public class Tester {
         int[][] SecondKeyRound = {{0xe2, 0x91, 0xB1, 0xD6}, {0x32, 0x12, 0x59, 0x79}, {0xFC, 0x91, 0xe4, 0xA2}, {0xf1, 0x88, 0xe6, 0x93}};
         int[][] FirstRoundState = {{0xBA, 0x84, 0xE8, 0x1b}, {0x75, 0xA4, 0x8D, 0x40}, {0xF4, 0x8D, 0x06, 0x7D}, {0x7A, 0x32, 0x0E, 0x5D}};
         int[][] SecondKeyRoundANDFirstRoundStateYEILD = {{0x58, 0x15, 0x59, 0xCD}, {0x47, 0xb6, 0xD4, 0x3}, {0x08, 0x1c, 0xe2, 0xdf}, {0x8b, 0xba, 0xe8, 0xce}};
-        Assert.assertArrayEquals(SecondKeyRoundANDFirstRoundStateYEILD, etest.AddRoundKey(FirstRoundState, SecondKeyRound, 1));
+        Assert.assertArrayEquals(SecondKeyRoundANDFirstRoundStateYEILD, etest128.AddRoundKey(FirstRoundState, SecondKeyRound, 1));
     }    
     @Test
     public void testPlain(){
