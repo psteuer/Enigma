@@ -37,9 +37,11 @@ public class EnigmaController {
     public int keySize;
 
     public EnigmaController() {
+
+        //Calls the given state and which corrisponds to the variables
         Context state = new Context();
-        //OneTwentyEight size = new OneTwentyEight();
-        TwoFiftySix size = new TwoFiftySix();
+        OneTwentyEight size = new OneTwentyEight();
+        // TwoFiftySix size = new TwoFiftySix();
         //OneNineTwo size = new OneNineTwo();
         size.set(state);
         NB = size.getNB();
@@ -186,16 +188,14 @@ public class EnigmaController {
                     int fullTimes = line.length() / 24;
                     for (int a = 0; a < fullTimes; a++) {
                         String detext = line.substring(a * 24, (24 * a) + 24);
-                        System.out.println("DETEXT IS: " + detext);
                         int[][] nfo = DecryptModel.decipher(base64Toint(detext), format(key, "Key", NK));
-
-                        fileout.write(intTostr(nfo));
+                        fileout.write(intTostr(nfo, false));
 
                     }
                     if (leftOver > 0) {
                         String detext = line.substring(line.length() - leftOver, line.length());
                         int[][] nfo = DecryptModel.decipher(base64Toint(detext), format(key, "Key", NK));
-                        fileout.write(intTostr(nfo));
+                        fileout.write(intTostr(nfo, true));
                     }
                 }
                 fileout.close();
@@ -275,7 +275,7 @@ public class EnigmaController {
                 key = theView.getkeytext();
                 Detext = theView.getdetext();
                 int[][] nfo = DecryptModel.decipher(base64Toint(Detext), format(key, "Key", NK));
-                theView.setDecryptTextOutput(intTostr(nfo));
+                theView.setDecryptTextOutput(intTostr(nfo, false));
             } catch (Exception abc) {
                 abc.getMessage();
             }
@@ -287,7 +287,7 @@ public class EnigmaController {
      * Takes string and outputs base64 integer, for the input of decrypt
      *
      * @param Detext
-     * @return Inbase64, integers representation of base64 bytes
+     * @return InBase64, integers representation of base64 bytes
      */
     public int[][] base64Toint(String Detext) {
         byte[] decodedBytes = Base64.getDecoder().decode(Detext);
@@ -306,9 +306,10 @@ public class EnigmaController {
      * For use in formatting the output of Decrypt
      *
      * @param input
+     * @param end is this the end of a line
      * @return Normal ASCII string of characters
      */
-    public String intTostr(int[][] input) {
+    public String intTostr(int[][] input, boolean end) {
         StringBuilder out = new StringBuilder();
         int[] temp = new int[16];
         int count = 0;
@@ -317,9 +318,22 @@ public class EnigmaController {
                 temp[count] = input[c][r];
                 out.append(Character.toString((char) temp[count]));
                 count++;
+
             }
         }
-        return out.toString();
+
+        String formattedOut = out.toString();
+        String a;
+        if (formattedOut.endsWith("  ")) {
+            a = formattedOut.trim() + '\n';
+
+        }else
+            a = formattedOut;
+        if (end) {
+            a = formattedOut.trim() + '\n';
+            System.out.println(formattedOut.trim() + '\n');
+        }
+        return a;
     }
 
     /*

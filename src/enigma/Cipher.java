@@ -1,5 +1,7 @@
 package enigma;
 
+import java.util.Arrays;
+
 /**
  *
  * @author tuf67096 This is the model for the MVC pattern Both Encrypt and
@@ -151,9 +153,9 @@ public class Cipher {
      * @return modified state
      */
     public int[][] AddRoundKey(int[][] state, int[][] key, int round) {
-        int wordplace = round * NB;
+        int wordplace = round * NK;//was NB
         for (int row = 0; row < NB; row++) {
-            for (int col = 0; col < 4; col++) {
+            for (int col = 0; col < NK; col++) {
                 //simple XOR each state int to corrisponding key int
                 state[row][col] = state[row][col] ^ key[row][col + wordplace];
             }
@@ -171,8 +173,8 @@ public class Cipher {
     public int[][] KeyScheduler(int[][] key) {
         int[][] expKey = new int[NB][NW]; // 44 rows* 4 col = 176 bytes
         //saves the first NK words into expKey array
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 4; col++) {
+        for (int row = 0; row < NK; row++) {
+            for (int col = 0; col < 4; col++) { //switched NK and 4
                 expKey[col][row] = key[row][col];
             }
         }
@@ -181,36 +183,44 @@ public class Cipher {
         int[] temp = new int[4];
         int place = NK * 4; //start at the 16th bit for 128
 
-        while (place < NWB) { //176 is 4*44 do this loop total of 10 times each time through I add 128bits, 16 bytes 
+        while (place < NWB) { //176 is 4*44 do this loop total of 10 times each time through I add 128bits, 16 bytes
+            System.out.println("SECTION: A");
             //We assign the value of the previous four bytes in the expanded key to t 
             for (int a = 0; a < 4; a++) {
                 temp[a] = expKey[a][(place / NK) - 1]; //gets the last row
             }
+
             temp = KeyCore(temp, rconPlace);
+
             rconPlace++;
             //We exclusive-OR t with the four-byte block n bytes before the new expanded key. This becomes the next 4 bytes in the expanded key
             for (int b = 0; b < 4; b++) {
-                expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - NK]; //subtract 4 so were at the begining of the new place
+                expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - 4]; //subtract 4 so were at the begining of the new place
             }
-            place += NK; //increase by word
+            place += 4; //increase by word
+            System.out.println("A - " + place);
 
             for (int w = 0; w < 3; w++) {
+                System.out.println("SECTION: B");
                 //We assign the value of the previous 4 bytes in the expanded key to t  
                 for (int a = 0; a < 4; a++) {
                     temp[a] = expKey[a][(place / NK) - 1];
                 }
                 //We exclusive-OR t with the four-byte block n bytes before the new expanded key. This becomes the next 4 bytes in the expanded key //DONE
                 for (int b = 0; b < 4; b++) {
-                    expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - NK];  //subtract 4 so were at the begining of the new place
+                    expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - 4]; //subtract 4 so were at the begining of the new place
                 }
-                place += NK; //increase by word   
+                place += 4; //increase by word 
+                System.out.println("B - " + place);
+
             }
             //Do this if it is 256 encryption CURRENT EXPANSION 4/26/17 -Does not work (out of the scope of my project)
             if (NWB == 240) {
+                System.out.println("SECTION: C");
                 for (int a = 0; a < 4; a++) {
-                    temp[a] = expKey[a][(place / NK) - 1]; //this might not be correct
+                    temp[a] = expKey[a][(place / NK) - 1];
                 }
-                //We run each of the 4 bytes in t through Rijndael's S-box
+                //We run each of the 4 bytes in t through Rijndael's S-box double check this
                 for (int y = 0; y < 4; y++) {
                     int e = temp[y] & 0x0F;
                     int c = (temp[y] >> 4) & 0x0F;
@@ -218,31 +228,38 @@ public class Cipher {
                 }
                 //We exclusive-OR t with the four-byte block n bytes before the new expanded key. This becomes the next 4 bytes in the expanded key //DONE
                 for (int b = 0; b < 4; b++) {
-                    expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - NK];  //subtract 4 so were at the begining of the new place
+                    expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - 4]; //subtract 4 so were at the begining of the new place
                 }
-                place += NK; //generates the next 4 bytes of expanded key
+                place += 4; //generates the next 4 bytes of expanded key
+                System.out.println("C - " + place);
+                System.out.println(Arrays.deepToString(expKey));
+
             }
             if (NWB == 240 || NWB == 208) {
+                System.out.println("SECTION: D " + place);
                 int num_of_times;
                 if (NWB == 240) {
                     num_of_times = 3;
                 } else {
                     num_of_times = 2;
                 }
-
                 for (int c = 0; c < num_of_times; c++) {
                     for (int a = 0; a < 4; a++) {
                         temp[a] = expKey[a][(place / NK) - 1];
                     }
                     //We exclusive-OR t with the four-byte block n bytes before the new expanded key. This becomes the next 4 bytes in the expanded key //DONE
                     for (int b = 0; b < 4; b++) {
-                        expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - NK];  //subtract 4 so were at the begining of the new place
+                        expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - 4]; //subtract 4 so were at the begining of the new place
                     }
                 }
-                place += NK * num_of_times;
+                place += 4 * num_of_times;
+                System.out.println("D - " + place);
+
             }
         }
-
+        System.out.println("TESTING AREA<<_____________________>>");
+        //hexprint(expKey);
+        System.out.println(Arrays.deepToString(expKey));
         return expKey;
     }
 
@@ -275,9 +292,9 @@ public class Cipher {
      */
     public void hexprint(int[][] state) {
         System.out.print(" [");
-        for (int a = 0; a < 4; a++) {
+        for (int a = 0; a < NK; a++) {
             System.out.print("[");
-            for (int b = 0; b < 4; b++) {
+            for (int b = 0; b < NB; b++) {
                 if (b != 3) {
                     System.out.print(Integer.toHexString(state[a][b]) + ", ");
                 } else {
