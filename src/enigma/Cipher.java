@@ -184,7 +184,7 @@ public class Cipher {
         int place = NK * 4; //start at the 16th bit for 128
 
         while (place < NWB) { //176 is 4*44 do this loop total of 10 times each time through I add 128bits, 16 bytes
-            System.out.println("SECTION: A");
+            //System.out.println("SECTION: A");
             //We assign the value of the previous four bytes in the expanded key to t 
             for (int a = 0; a < 4; a++) {
                 temp[a] = expKey[a][(place / NK) - 1]; //gets the last row
@@ -198,10 +198,10 @@ public class Cipher {
                 expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - 4]; //subtract 4 so were at the begining of the new place
             }
             place += 4; //increase by word
-            System.out.println("A - " + place);
+            //System.out.println("A - " + place);
 
             for (int w = 0; w < 3; w++) {
-                System.out.println("SECTION: B");
+                //System.out.println("SECTION: B");
                 //We assign the value of the previous 4 bytes in the expanded key to t  
                 for (int a = 0; a < 4; a++) {
                     temp[a] = expKey[a][(place / NK) - 1];
@@ -211,12 +211,12 @@ public class Cipher {
                     expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - 4]; //subtract 4 so were at the begining of the new place
                 }
                 place += 4; //increase by word 
-                System.out.println("B - " + place);
+                //System.out.println("B - " + place);
 
             }
             //Do this if it is 256 encryption CURRENT EXPANSION 4/26/17 -Does not work (out of the scope of my project)
             if (NWB == 240) {
-                System.out.println("SECTION: C");
+                //System.out.println("SECTION: C");
                 for (int a = 0; a < 4; a++) {
                     temp[a] = expKey[a][(place / NK) - 1];
                 }
@@ -231,12 +231,12 @@ public class Cipher {
                     expKey[b][place / NK] = temp[b] ^ expKey[b][(place / NK) - 4]; //subtract 4 so were at the begining of the new place
                 }
                 place += 4; //generates the next 4 bytes of expanded key
-                System.out.println("C - " + place);
-                System.out.println(Arrays.deepToString(expKey));
+                //System.out.println("C - " + place);
+                //System.out.println(Arrays.deepToString(expKey));
 
             }
             if (NWB == 240 || NWB == 208) {
-                System.out.println("SECTION: D " + place);
+                //System.out.println("SECTION: D " + place);
                 int num_of_times;
                 if (NWB == 240) {
                     num_of_times = 3;
@@ -253,13 +253,13 @@ public class Cipher {
                     }
                 }
                 place += 4 * num_of_times;
-                System.out.println("D - " + place);
+                //System.out.println("D - " + place);
 
             }
         }
-        System.out.println("TESTING AREA<<_____________________>>");
+        //System.out.println("TESTING AREA<<_____________________>>");
         //hexprint(expKey);
-        System.out.println(Arrays.deepToString(expKey));
+        //System.out.println(Arrays.deepToString(expKey));
         return expKey;
     }
 

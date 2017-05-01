@@ -35,11 +35,24 @@ public class EnigmaController {
     public int NK;
     public int NR;
     public int keySize;
+    public KeyRand keyRand = null;
+    public DecryptFile1 decryptFile = null;
+    public EncryptListener encryptListener = null;
+    public DecryptListener decryptlistener = null;
+    public FileSelector fileSelector = null;
+    public static EncryptFile1 encryptFile = null;
+    public OutputFile outputFile = null;
 
+    /**
+     * Constructor for controller
+     *Declares the instances of all the other classes
+     * Uses state pattern to get key size
+     */
     public EnigmaController() {
 
         //Calls the given state and which corrisponds to the variables
         Context state = new Context();
+        //If you one commented you can see how my code reacts to different key sizes
         OneTwentyEight size = new OneTwentyEight();
         // TwoFiftySix size = new TwoFiftySix();
         //OneNineTwo size = new OneNineTwo();
@@ -48,6 +61,7 @@ public class EnigmaController {
         NR = size.getNR();
         NK = size.getNK();
         keySize = NB * NK;
+
         theView = new EnigmaView();
         EncryptModel = new Encrypt(NB, NR, NK);
         DecryptModel = new Decrypt(NB, NR, NK);
@@ -66,16 +80,45 @@ public class EnigmaController {
         theView.setResizable(false);
         theView.btnEnableDisable(false);
 
-        theView.addEncryptListener(new EncryptListener());
-        theView.addDecryptListener(new DecryptListener());
-        theView.addFileSelector(new FileSelector());
-        theView.addGoEncryptFile(new EncryptFile1());
-        theView.addGoDecryptFile(new DecrypFile1());
-        theView.addRand(new KeyRand());
-        theView.addOutputFileSelector(new OutputFile());
+        if (encryptListener == null) {
+            encryptListener = new EncryptListener();
+        }
+        theView.addEncryptListener(encryptListener);
+
+        if (decryptlistener == null) {
+            decryptlistener = new DecryptListener();
+        }
+        theView.addDecryptListener(decryptlistener);
+
+        if (fileSelector == null) {
+            fileSelector = new FileSelector();
+        }
+        theView.addFileSelector(fileSelector);
+
+        if (encryptFile == null) {
+            encryptFile = new EncryptFile1();
+        }
+        theView.addGoEncryptFile(encryptFile);
+        if (decryptFile == null) {
+            decryptFile = new DecryptFile1();
+        }
+        theView.addGoDecryptFile(decryptFile);
+
+        if (keyRand == null) {
+            keyRand = new KeyRand();
+        }
+        theView.addRand(keyRand);
+
+        if (outputFile == null) {
+            outputFile = new OutputFile();
+        }
+        theView.addOutputFileSelector(outputFile);
 
     }
 
+    /**
+     * Listens for OutputFile button
+     */
     class OutputFile implements ActionListener {
 
         @Override
@@ -94,6 +137,9 @@ public class EnigmaController {
         }
     }
 
+    /**
+     * Listens for Encrypt File button
+     */
     class EncryptFile1 implements ActionListener {
 
         @Override
@@ -153,7 +199,10 @@ public class EnigmaController {
         }
     }
 
-    class DecrypFile1 implements ActionListener {
+    /**
+     * Listens for Decrypt File button
+     */
+    class DecryptFile1 implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -214,6 +263,9 @@ public class EnigmaController {
 
     }
 
+    /**
+     * Listens for Random Key button
+     */
     class KeyRand implements ActionListener {
 
         @Override
@@ -228,6 +280,9 @@ public class EnigmaController {
         }
     }
 
+    /**
+     * Listens for Input File Selector Button
+     */
     class FileSelector implements ActionListener {
 
         @Override
@@ -247,6 +302,9 @@ public class EnigmaController {
 
     }
 
+    /**
+     * Listens for Encrypt button Pulls the Key and plaintext from the view
+     */
     class EncryptListener implements ActionListener {
 
         @Override
@@ -265,6 +323,9 @@ public class EnigmaController {
         }
     }
 
+    /**
+     * Listens for the Decrypt button Pulls the Key and plaintext from the view
+     */
     class DecryptListener implements ActionListener {
 
         @Override
@@ -327,8 +388,9 @@ public class EnigmaController {
         if (formattedOut.endsWith("  ")) {
             a = formattedOut.trim() + '\n';
 
-        }else
+        } else {
             a = formattedOut;
+        }
         if (end) {
             a = formattedOut.trim() + '\n';
             System.out.println(formattedOut.trim() + '\n');
@@ -336,8 +398,13 @@ public class EnigmaController {
         return a;
     }
 
-    /*
-    INPUT: String input - to convert, type: 1 is Key, 2 is Input
+    /**
+     * General Formatting function for plaintext to 2D integer array
+     *
+     * @param in
+     * @param type 1 for the key and 2 for plaintext input
+     * @param blocklength
+     * @return formattedIn this is the correctly formated integer array
      */
     public int[][] format(String in, String type, int blocklength) {
         int[][] formattedIn = new int[NB][blocklength]; //formatted entext
@@ -370,6 +437,14 @@ public class EnigmaController {
         return strpadded;
     }
 
+    /**
+     * Formats string to Integer called by format
+     *
+     * @param Entext
+     * @param type
+     * @param blocklength
+     * @return state array as integer
+     */
     public int[][] formatStrToInt(String Entext, String type, int blocklength) {
         int[] ans = new int[blocklength * 4];
         for (int a = 0; a < (blocklength * 4); a++) {

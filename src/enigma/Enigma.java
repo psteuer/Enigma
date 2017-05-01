@@ -22,10 +22,10 @@ public class Enigma {
         // EnigmaController thecontroller = new EnigmaController(theView, encrypt, decrypt);
         EnigmaController thecontroller = new EnigmaController();
 
-        Result result = JUnitCore.runClasses(enigma.Tester.class);
-        for (Failure failure : result.getFailures()) {
-            System.out.println(failure.toString());
-        }
+        //Result result = JUnitCore.runClasses(enigma.Tester.class);
+        //for (Failure failure : result.getFailures()) {
+        //    System.out.println(failure.toString());
+        //}
 
     }
 

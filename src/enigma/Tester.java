@@ -171,7 +171,7 @@ public class Tester {
     }    
     @Test
     public void testPlain(){
-       // Assert.assertEquals("Two One Nine Two", control.intTostr(stateTest));
+        Assert.assertEquals("Two One Nine Two", control.intTostr(stateTest, false));
     }
     
     @Test
